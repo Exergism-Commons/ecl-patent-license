@@ -1,0 +1,431 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Exergism-Commons/ecl-patent-license/blob/main/schemas/patent-grant.schema.json",
+  "title": "ECL-PL PatentGrantManifest",
+  "description": "Architecture-stage schema for an ECL Patent License grant manifest. Validation does not establish patent ownership, authority, infringement, enforceability, legal review, or operative status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "grant_id",
+    "status",
+    "patent_license",
+    "patent_licensor",
+    "covered_implementation",
+    "claim_scope",
+    "effective_date",
+    "downstream_policy",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1-draft"
+    },
+    "grant_id": {
+      "type": "string",
+      "pattern": "^ECL-PG-[a-z0-9][a-z0-9-]*-[0-9]{8}-[1-9][0-9]*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "candidate", "operative", "superseded", "withdrawn"],
+      "description": "Declared repository state only. Schema validation does not establish that an artifact is legally operative."
+    },
+    "patent_license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sha256"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "patent_licensor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "authority_representation", "authority_basis"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "legal_entity_identifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "jurisdiction_of_organization": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_representation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Express representation describing the Patent Licensor's asserted authority. This field is not proof of authority."
+        },
+        "authority_basis": {
+          "type": "string",
+          "enum": [
+            "owner",
+            "assignee",
+            "license-with-grant-authority",
+            "agent-with-express-authority",
+            "co-owner-with-sufficient-authority",
+            "other"
+          ]
+        },
+        "authority_evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "covered_implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactReference"
+          },
+          "uniqueItems": true
+        },
+        "combination_boundary": {
+          "type": "string",
+          "description": "Human-readable architecture-stage statement describing which combinations are inside or outside the implementation boundary."
+        },
+        "modification_boundary": {
+          "type": "string",
+          "description": "Human-readable architecture-stage statement describing treatment of modifications."
+        }
+      }
+    },
+    "claim_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "definition", "later_acquired_claims", "combination_expansion"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["necessarily-infringed", "enumerated-only", "hybrid", "other"]
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable statement of the intended claim-scope rule. The future operative licence must supply the controlling legal definition."
+        },
+        "later_acquired_claims": {
+          "type": "string",
+          "enum": ["included-if-rule-satisfied", "excluded-unless-added", "not-decided"]
+        },
+        "combination_expansion": {
+          "type": "string",
+          "enum": ["no-expansion", "defined-combinations-only", "rule-based", "not-decided"]
+        },
+        "enumerated_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimReference"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiration_policy": {
+      "type": "string",
+      "description": "Optional grant-specific statement. Patent expiration/lapse consequences remain governed by applicable law."
+    },
+    "downstream_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "sublicensing"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["direct-grant", "sublicense-chain", "hybrid", "not-decided"]
+        },
+        "sublicensing": {
+          "type": "string",
+          "enum": ["not-granted", "expressly-granted", "conditional", "not-decided"]
+        },
+        "have_made": {
+          "type": "string",
+          "enum": ["included", "excluded", "conditional", "not-decided"]
+        },
+        "affiliates": {
+          "type": "string",
+          "enum": ["included", "excluded", "separate-direct-grants", "conditional", "not-decided"]
+        },
+        "contract_manufacturers": {
+          "type": "string",
+          "enum": ["included", "excluded", "conditional", "not-decided"]
+        },
+        "customers": {
+          "type": "string",
+          "enum": ["direct-grant", "derivative-right", "no-express-grant", "conditional", "not-decided"]
+        }
+      }
+    },
+    "defensive_termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile"],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["none", "narrow-covered-implementation", "custom", "not-decided"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "defensive_counterclaims_excluded": {
+          "type": "boolean"
+        },
+        "cross_claims_excluded": {
+          "type": "boolean"
+        },
+        "declaratory_actions_excluded": {
+          "type": "boolean"
+        },
+        "cure_or_withdrawal": {
+          "type": "string",
+          "enum": ["available", "unavailable", "conditional", "not-decided"]
+        }
+      }
+    },
+    "ecl_bundle_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "license_sha256", "schedule_sha256", "purpose"],
+      "properties": {
+        "bundle_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schedule_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "purpose": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "provenance-only",
+              "eligibility-policy",
+              "field-of-use-policy",
+              "restricted-party-policy",
+              "restricted-project-policy",
+              "anti-circumvention-policy",
+              "other"
+            ]
+          }
+        },
+        "patent_specific_effect": {
+          "type": "string",
+          "description": "Required by policy/review when the ECL reference has a normative patent effect; an ECL reference never imports unspecified patent consequences."
+        }
+      }
+    },
+    "known_patents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patentReference"
+      },
+      "uniqueItems": true
+    },
+    "known_encumbrances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "status"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": ["known", "asserted", "disputed", "unknown-effect"]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidenceReference"
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recorded_at", "authority_checked", "notes"],
+      "properties": {
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "authority_checked": {
+          "type": "boolean",
+          "description": "A factual workflow flag only; it does not establish legal authority."
+        },
+        "notes": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          }
+        }
+      }
+    },
+    "legal_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_id", "record_sha256"],
+      "properties": {
+        "review_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "claimReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patent_or_application", "claim"],
+      "properties": {
+        "patent_or_application": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim": {
+          "type": ["integer", "string"]
+        },
+        "jurisdiction": {
+          "type": "string"
+        }
+      }
+    },
+    "patentReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifier", "kind", "jurisdiction", "status"],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["application", "patent", "utility-model", "other"]
+        },
+        "jurisdiction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "granted",
+            "validated",
+            "expired",
+            "lapsed",
+            "abandoned",
+            "withdrawn",
+            "revoked",
+            "limited",
+            "unknown"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
