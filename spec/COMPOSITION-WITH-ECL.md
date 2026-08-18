@@ -82,19 +82,38 @@ A normative `ecl_bundle_reference.patent_specific_effect.trigger.policy_item` is
 The canonical pointer is the tuple:
 
 ```text
-(exact ECL artifact, item kind, 1-based start line, line count, selected-text SHA-256)
+(exact ECL artifact, item kind, 1-based start line, line count, selected-byte SHA-256)
 ```
 
 where the artifact is exactly `license` or `schedule` from the ECL Bundle identified by `license_sha256` and `schedule_sha256`.
 
+The hash is defined over an exact byte slice, not over a decoder's reconstructed text. For an ECL artifact to be eligible for line-range addressing, release tooling must first require all of the following:
+
+- the exact artifact bytes match the bundle's declared SHA-256;
+- the artifact is valid UTF-8;
+- the artifact does not begin with the UTF-8 BOM bytes `EF BB BF`;
+- line separators are single LF bytes (`0A`); any CR byte (`0D`) is rejected rather than normalized; and
+- no decoding error, replacement character insertion or implicit newline conversion is permitted.
+
+Line addressing is then defined directly on those verified bytes:
+
+1. line 1 starts at byte offset 0;
+2. each LF byte terminates the current line and the next byte, if any, starts the next line;
+3. `start_line` selects the first addressed line and `line_count` selects that many consecutive lines;
+4. the selected byte slice starts at the first byte of `start_line`;
+5. the slice ends after the content bytes of the final selected line **and includes that line's terminating LF if and only if that LF exists in the immutable artifact**;
+6. internal LF separators are therefore included exactly as stored;
+7. a final unterminated line is valid and contributes no synthetic terminating LF; and
+8. no bytes are trimmed, decoded/re-encoded, Unicode-normalized or otherwise transformed before hashing.
+
 Before a PatentGrantBundle may become a release candidate or operative, release tooling must:
 
 1. load the exact content-addressed ECL artifact identified by the corresponding bundle hash;
-2. reject a pointer whose line range is out of bounds or otherwise does not resolve exactly once;
-3. select exactly the declared line range after repository-standard UTF-8 decoding and LF newline normalization;
-4. hash the selected UTF-8/LF bytes and require equality with `policy_item.text_sha256`;
-5. verify under the canonical ECL parser/release metadata that the resolved range is an item of the declared `kind`; and
-6. fail closed on any missing artifact, hash mismatch, parser disagreement, ambiguous target or unresolved item.
+2. enforce the byte preconditions and line-addressing algorithm above;
+3. reject a pointer whose line range is out of bounds or otherwise does not resolve exactly once;
+4. SHA-256 the exact selected byte slice and require equality with `policy_item.text_sha256`;
+5. decode the already-verified artifact as UTF-8 for parsing, without changing bytes, and verify under the canonical ECL parser/release metadata that the resolved range is an item of the declared `kind`; and
+6. fail closed on any missing artifact, BOM, CR byte, invalid UTF-8, hash mismatch, parser disagreement, ambiguous target or unresolved item.
 
 Equivalent prose labels, alternate anchors, shortened names and other aliases are not interchangeable pointer identities. A publisher that wishes to reference a different range must publish a different manifest identity. This resolver gate is semantic release validation in addition to JSON Schema validation.
 
