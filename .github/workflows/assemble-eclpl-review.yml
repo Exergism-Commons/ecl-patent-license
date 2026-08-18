@@ -1,0 +1,40 @@
+name: Assemble ECL-PL review payload
+
+on:
+  push:
+    branches:
+      - architecture/bootstrap
+    paths:
+      - tmp-assemble-trigger
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: architecture/bootstrap
+          fetch-depth: 0
+      - name: Reconstruct exact reviewed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tmp-versioning-b64.part tmp-versioning-b64.1 | base64 -d > spec/VERSIONING.md
+          cat tmp-schema-b64.0 tmp-schema-b64.1 tmp-schema-b64.2 | base64 -d > schemas/patent-grant.schema.json
+          echo '67d74ad901b850ef9111e7870ec67e3fa22f07a5cc402442a9e714026beee273  spec/VERSIONING.md' | sha256sum -c -
+          echo 'aa366cc4a2ab205f8a4b72d4e90a97c12f5e9a2c575e6fc3444de92953bbdfe9  schemas/patent-grant.schema.json' | sha256sum -c -
+          python -m json.tool schemas/patent-grant.schema.json >/dev/null
+          rm -f tmp-marker-unused.txt tmp-versioning-b64.part tmp-versioning-b64.1 tmp-schema-b64.0 tmp-schema-b64.1 tmp-schema-b64.2 tmp-assemble-trigger
+      - name: Commit exact reconstruction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Papishushi'
+          git config user.email '57540881+Papishushi@users.noreply.github.com'
+          git add -A
+          git commit -m 'Close identity and bundle canonicalization gaps'
+          git push origin HEAD:architecture/bootstrap
