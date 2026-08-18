@@ -57,12 +57,14 @@ evidence/...
 2. LF (`0x0A`) is the only line separator.
 3. The first line is exactly `ECL-PL-BUNDLE-INDEX-v1`.
 4. Every subsequent line is exactly `<lowercase-sha256><two ASCII spaces><canonical-member-path>`.
-5. The member list includes `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and **every** evidence member referenced by the manifest.
-6. Entries are sorted by the raw UTF-8 bytes of `canonical-member-path`, ascending.
-7. Each member path occurs exactly once.
-8. The index has one mandatory terminal LF.
-9. `BUNDLE-INDEX` does not list itself.
-10. A conforming package contains exactly `BUNDLE-INDEX` plus the members listed by it; missing or unindexed extra members are rejected.
+5. The member set is **exactly** `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and every evidence member referenced by the manifest. An unreferenced evidence member or any other additional member is invalid even if it is listed in the index.
+6. A `canonical-member-path` is either one of the two fixed paths above or a path satisfying the canonical evidence-path grammar in section 10.4. No other spelling is indexable.
+7. Entries are sorted by the raw UTF-8 bytes of `canonical-member-path`, ascending.
+8. Each member path occurs exactly once.
+9. The index has one mandatory terminal LF.
+10. `BUNDLE-INDEX` does not list itself.
+11. A conforming package contains exactly `BUNDLE-INDEX` plus the members listed by it; missing, unindexed or extra physical members are rejected.
+12. Before extraction, archive/package tooling validates every raw member name, rejects symlinks and hardlinks, and rejects any pair of names that would collide under the target platform's path normalization, case folding or separator rules. Validation and hashing use the literal indexed UTF-8 member name; extraction must never be used to decide identity.
 
 For every listed member, tooling hashes the exact member bytes and requires equality with the digest in the index. No path normalization, filesystem aliasing, symlink following, case folding, percent decoding, Unicode normalization or separator rewriting is permitted during lookup.
 
@@ -165,20 +167,21 @@ Individuals use only:
 scheme: authoritative-opaque-token
 identifier: idtok:v1:<base64url-token>
 attestation_snapshot:
-  bundle_path: evidence/identity/<canonical-member>
+  bundle_path: evidence/identity/sha256/<digest>
   sha256: <digest>
 ```
 
 The token protocol is deliberately **not** a hash of a DNI, SSN, passport number or other low-entropy identifier:
 
-1. an authoritative identity verifier generates at least 256 bits of cryptographically secure random entropy;
-2. the token payload is unpadded base64url of that random value and is prefixed `idtok:v1:`;
-3. the token must be statistically independent of government-ID spelling, number, date of birth, name or other enumerable personal data;
-4. the verifier produces an authenticated attestation binding the opaque token to the named Patent Licensor and relevant jurisdiction/verification event without embedding the plaintext government identifier;
-5. the exact attestation bytes are retained as an indexed `evidence/identity/...` bundle member; and
-6. release tooling verifies the attestation and its snapshot hash according to the verifier profile.
+1. an authoritative identity verifier generates **exactly 32 bytes (256 bits)** of cryptographically secure random entropy;
+2. the token payload is the RFC 4648 base64url encoding of those 32 bytes with padding omitted, producing exactly 43 characters, and is prefixed `idtok:v1:`;
+3. release tooling uses a strict base64url decoder, rejects non-alphabet characters or padding, requires exactly 32 decoded bytes, and then re-encodes with the canonical unpadded base64url encoder; the re-encoded token must equal the manifest token byte-for-byte;
+4. the token must be statistically independent of government-ID spelling, number, date of birth, name or other enumerable personal data;
+5. the verifier produces an authenticated attestation binding the opaque token to the named Patent Licensor and relevant jurisdiction/verification event without embedding the plaintext government identifier;
+6. the exact attestation bytes are retained under `evidence/identity/sha256/<digest>`, where `<digest>` is the lowercase SHA-256 of those exact attestation bytes; and
+7. release tooling requires the terminal path digest, `attestation_snapshot.sha256`, the `BUNDLE-INDEX` digest for that member and the recomputed hash of the exact member bytes all to be identical.
 
-For an individual, `record_uri` and plaintext-derived identity fields are forbidden. Tooling must never derive, request, insert or publish a plaintext government identifier in the manifest, bundle index, evidence member path or identity token.
+For an individual, `record_uri` and plaintext-derived identity fields are forbidden. Tooling must never derive, request, insert or publish a plaintext government identifier in the manifest, bundle index, evidence member path or identity token. An identity evidence member name is content-addressed and therefore cannot be selected from a name, DNI, SSN, passport number, case number or other personal identifier.
 
 ### 10.3 Raw JSON lexical gate
 
@@ -196,13 +199,16 @@ A parser configuration that independently guarantees strict UTF-8, rejects unpai
 
 ### 10.4 Canonical evidence paths
 
-Every `evidence_snapshot.bundle_path` is a canonical relative member path:
+Every evidence member path is a canonical relative member path and must be valid **before it can appear in `BUNDLE-INDEX`**:
 
 - `/` is the only separator;
-- it begins with `evidence/patents/` or `evidence/identity/`;
-- every subsequent segment begins with an ASCII alphanumeric character and contains only ASCII alphanumerics, `.`, `_` or `-`;
-- empty segments, `.` segments, `..` segments, repeated separators, leading/trailing separators and backslashes are impossible/forbidden;
-- lookup uses the literal UTF-8 member-name bytes from `BUNDLE-INDEX`; a filesystem-normalized equivalent is not an alias.
+- patent evidence begins with `evidence/patents/`; each later segment begins with an ASCII alphanumeric character and contains only ASCII alphanumerics, `.`, `_` or `-`;
+- identity attestation evidence is **only** `evidence/identity/sha256/<64 lowercase hexadecimal SHA-256 characters>`;
+- for identity evidence, the terminal digest must equal the SHA-256 of the exact member bytes and the corresponding `attestation_snapshot.sha256`;
+- empty segments, `.` segments, `..` segments, repeated separators, leading/trailing separators and backslashes are forbidden;
+- percent-encoded, Unicode-normalized, case-folded or filesystem-normalized aliases are not equivalent names;
+- every index entry other than `license/PATENT-LICENSE` and `manifest/patent-grant.json` must satisfy one of these evidence grammars **and must be referenced by the manifest**; and
+- package readers reject raw-name collisions before any extraction and use literal UTF-8 member-name bytes from `BUNDLE-INDEX` for lookup.
 
 ### 10.5 Combination-rule hash binding
 
@@ -215,6 +221,22 @@ After the lexical gate succeeds, `rule_sha256` hashes exactly the strict UTF-8 e
 The approval/adoption record identifies the Patent Licensor, approving actor/mechanism, asserted authority, exact `ECL-PL-BUNDLE-v1:<digest>` identity, act time and integrity/authentication evidence. Approval of a different bundle identity cannot retroactively approve this one.
 
 Tooling may verify integrity, authentication evidence and declared state. It must not pretend to determine patent ownership, legal authority, claim coverage, enforceability, infringement, exhaustion or lawyer competence.
+
+### 10.7 Closed JSON Schema resource set
+
+`schemas/schema-set.json` is the machine-readable registry manifest for the Draft 2020-12 PatentGrantManifest schema resource set. Each schema resource has an immutable ECL-PL URN `$id`, and every cross-resource `$ref` uses one of those exact URNs. A mutable Git branch URL, GitHub HTML `blob` page or other network location is never a schema dependency.
+
+Conforming release validation is closed and deterministic:
+
+1. load `schema-set.json` from the exact reviewed repository/release inputs;
+2. require exactly the resources listed by that manifest and no substitute resource;
+3. hash each resource's exact bytes and require equality with the listed SHA-256;
+4. parse each resource as JSON Schema Draft 2020-12 and require its `$id` to equal the listed URN;
+5. register all resources in the validator registry by those exact URNs **before** evaluating the root schema;
+6. validate using the listed `root_id`; and
+7. forbid HTTP(S), filesystem fallback, package-manager lookup or any other network/ambient resolution for an unregistered `$ref`.
+
+A validator that is given only `patent-grant.schema.json` without the verified registered resource set is not a conforming ECL-PL release validator. Release/review records that bind schema semantics must retain or hash `schema-set.json` and all resources listed by it.
 
 ## 11. Suggested repository layout
 
@@ -237,7 +259,8 @@ bundles/
       patents/
         <retained-snapshot>
       identity/
-        <retained-attestation>
+        sha256/
+          <digest>
 
 reviews/
   legal/
