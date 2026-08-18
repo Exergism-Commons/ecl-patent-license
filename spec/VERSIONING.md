@@ -183,9 +183,9 @@ Expected workflow:
 ```text
 1. Select exact stable PatentLicenseRelease
 2. Prepare PatentGrantManifest
-3. Validate syntax/schema
+3. Validate raw JSON lexical safety, syntax and schema
 4. Recompute and validate all declared local content hashes
-5. Resolve and verify patent-publication identities, registry metadata and provenance sources
+5. Resolve and verify patent-publication identities, registry metadata and retained provenance evidence
 6. Verify the Patent Licensor identity reference under its declared scheme
 7. Attach and resolve any exact ECL Bundle reference
 8. Complete grant-specific review required by policy
@@ -208,39 +208,52 @@ For every property key in `claim_scope.enumerated_claims` and `known_patents`:
 3. require the manifest `source` HTTPS URI to resolve to the same publication record, not merely to the same registry home page;
 4. derive or verify the publication/document kind from the authoritative record and reject a contradictory `kind` value;
 5. verify the recorded `status` against authoritative evidence appropriate to `provenance.recorded_at`;
-6. fetch or otherwise recover the exact evidence snapshot identified by that patent entry's `evidence_uri`, hash the exact retained snapshot bytes and require equality with that entry's `evidence_sha256`;
-7. require the retained evidence snapshot to substantiate the same publication identity, kind and status observed at `provenance.recorded_at`; and
-8. reject a missing record, unsupported kind code, all-zero identifier, ambiguous match, stale alias, contradictory state, source mismatch, unavailable evidence snapshot or evidence-hash mismatch.
+6. locate the exact PatentGrantBundle member named by that patent entry's `evidence_snapshot.bundle_path`;
+7. hash the exact retained member bytes and require equality with `evidence_snapshot.sha256`;
+8. require those retained bytes to substantiate the same publication identity, kind and status observed at `provenance.recorded_at`; and
+9. reject a missing record, unsupported kind code, impossible authority/kind/number form, ambiguous match, stale alias, contradictory state, source mismatch, missing bundle member or evidence-hash mismatch.
 
-`provenance.recorded_at` is an assertion-level RFC 3339 timestamp in the schema; release tooling must not accept a non-date placeholder or silently substitute its own current time.
+The evidence snapshot is therefore not an external mutable URL. The bytes themselves are an immutable, content-addressed PatentGrantBundle member and must remain recoverable with the bundle for historical revalidation.
+
+`provenance.recorded_at` is an assertion-level RFC 3339 timestamp with a **known** offset. `Z` and explicit numeric offsets are permitted; the RFC 3339 unknown-offset marker `-00:00` is forbidden. Release tooling must not accept a non-date placeholder, an unknown offset, or silently substitute its own current time.
 
 A syntactically valid key therefore cannot manufacture a patent publication, override authoritative registry metadata or leave a historical status assertion dependent on an unretained mutable registry response.
+
+For USPTO identifiers, schema-level canonicalization intentionally distinguishes post-2000 kind-code families: A1/A2 application-publication identities use the four-digit publication year plus seven-digit annual sequence, and B1/B2 patent grants require a seven- or eight-digit patent number. Release tooling must still round-trip every identifier through the authoritative registry; schema syntax is not evidence that a publication exists.
 
 #### Patent Licensor identity schemes
 
 `patent_licensor.identity_reference` must be verified using the declared `scheme` and `record_uri`. The identifier grammar is scheme-specific.
 
-For an `individual`, the manifest may contain only:
+For an `individual`, the manifest permits only `scheme: government-id-hash` with the explicit `sha256:<digest>` representation. Court, agency and other public-record locator schemes are deliberately reserved for legal entities because a prefixed free-form locator can itself contain a plaintext personal identifier.
 
-- a `government-id-hash` value in the explicit `sha256:<digest>` representation; or
-- a non-secret public record locator using the schema-defined `case:`, `record:` or `public-record:` grammar.
+Accordingly, values such as `case:SSN-...`, `record:<government-id>` or `public-record:ssn:...` cannot be made acceptable merely by adding a record prefix. Release tooling must fail closed on any scheme/subject mismatch or a `record_uri` that does not corroborate the named Patent Licensor. Tooling must never publish, derive, request or substitute the plaintext government identifier into the manifest.
 
-A bare personal/government identifier must never be accepted merely because it was placed under `court-or-agency-record` or `other-authoritative-registry`. Release tooling must fail closed if an individual identifier is secret/private data, a plaintext government identifier, a scheme/subject mismatch, or a record locator that does not corroborate the named Patent Licensor. Tooling must never publish, derive, request or substitute the plaintext government identifier into the manifest.
+#### Raw JSON Unicode-scalar gate
+
+Before passing manifest bytes to a general JSON parser, release tooling must perform a lossless lexical validation over the exact raw UTF-8 JSON bytes:
+
+1. require strict UTF-8 input and reject a BOM, malformed byte sequence or any decoder replacement;
+2. tokenize JSON strings without normalizing or decoding away escape structure;
+3. for every raw `\uXXXX` escape, reject a low-surrogate escape (`\uDC00`–`\uDFFF`) unless it is immediately paired with a preceding high-surrogate escape in the same JSON string;
+4. require every high-surrogate escape (`\uD800`–`\uDBFF`) to be immediately followed by a low-surrogate `\uXXXX` escape in the same string;
+5. reject any unpaired surrogate escape before invoking a parser that might replace it with U+FFFD; and
+6. only after this lexical gate may the manifest be parsed and schema-validated.
+
+A release implementation is non-conforming if its parser silently replaces malformed surrogate escapes and the release gate then hashes the replacement. Implementations may instead use a JSON parser that itself rejects unpaired surrogate escapes, provided that behavior is tested and guaranteed for the release path.
 
 #### Combination-rule hash binding
 
 For `claim_scope.combination_expansion: rule-based`, `combination_rule.hash_mode` is `utf8-json-string-value-v1`.
 
-The bytes hashed for `rule_sha256` are exactly:
+After the raw JSON Unicode-scalar gate has succeeded, the bytes hashed for `rule_sha256` are exactly:
 
-1. parse the manifest JSON successfully;
-2. take the resulting Unicode string value of `combination_rule.rule_text` after JSON escape decoding;
-3. **before encoding**, verify that every code point is a Unicode scalar value and reject any unpaired UTF-16 surrogate value in the range U+D800–U+DFFF;
-4. encode the accepted scalar-value string as UTF-8 with strict error handling and no BOM;
-5. perform no Unicode normalization, newline conversion, whitespace trimming, replacement-character substitution or other transformation; and
-6. append no terminating newline or NUL byte.
+1. take the parsed Unicode scalar-value string of `combination_rule.rule_text` after JSON escape decoding;
+2. encode that accepted string as UTF-8 with strict error handling and no BOM;
+3. perform no Unicode normalization, newline conversion, whitespace trimming, replacement-character substitution or other transformation; and
+4. append no terminating newline or NUL byte.
 
-An implementation that replaces a lone surrogate with U+FFFD is non-conforming; the manifest must be rejected instead. Release tooling must recompute SHA-256 over exactly the accepted UTF-8 bytes and require equality with `rule_sha256`. The rule text must itself contain the complete controlling rule; an indirect instruction such as `See applicable rule` cannot be cured by attaching an arbitrary hash.
+Release tooling must recompute SHA-256 over exactly those bytes and require equality with `rule_sha256`. The rule text must itself contain the complete controlling rule; an indirect instruction such as `See applicable rule` cannot be cured by attaching an arbitrary hash.
 
 The approval/adoption record must identify the Patent Licensor, the approving actor or authenticated mechanism, the authority asserted for that act, the exact bundle identity being adopted, the time of the act, and integrity information sufficient to detect substitution. A later approval of different hashes cannot retroactively adopt an earlier bundle.
 
@@ -258,6 +271,9 @@ grants/
 
 bundles/
   <bundle-id>.json
+  evidence/
+    patents/
+      <retained-snapshot>
 
 provenance/
   <grant-or-family-id>/
@@ -268,7 +284,7 @@ reviews/
     records/
 ```
 
-The precise layout may change before the first stable release, but the separation between immutable legal text, immutable grant declaration, provenance and review records should remain.
+The precise layout may change before the first stable release, but the separation between immutable legal text, immutable grant declaration, retained provenance evidence and review records should remain.
 
 ## 12. Revocation, withdrawal and termination
 
