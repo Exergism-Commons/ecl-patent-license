@@ -93,22 +93,27 @@
     "covered_implementation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "description"],
+      "required": ["id", "description", "artifact_references"],
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "description": "Human-readable implementation identifier only; normative identity is supplied by the required immutable artifact_references."
         },
         "description": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "artifact_references": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "$ref": "#/$defs/artifactReference"
           },
-          "uniqueItems": true
+          "uniqueItems": true,
+          "description": "Normative Covered Implementation identity. Every referenced artifact is content-addressed and the set may not be omitted."
         },
         "combination_boundary": {
           "type": "string",
@@ -267,15 +272,65 @@
               "anti-circumvention-policy",
               "other"
             ]
-          }
+          },
+          "description": "provenance-only is exclusive and may not be combined with any normative policy purpose."
         },
         "patent_specific_effect": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Required whenever the ECL reference has any normative patent purpose; it must state the exact patent-specific consequence and an ECL reference never imports unspecified patent consequences."
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["consequence", "trigger", "affected_rights"],
+          "properties": {
+            "consequence": {
+              "type": "string",
+              "enum": [
+                "withhold-initial-grant",
+                "condition-initial-grant",
+                "terminate-existing-rights",
+                "suspend-existing-rights",
+                "limit-existing-rights"
+              ]
+            },
+            "trigger": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": ".*\\S.*",
+              "description": "Non-whitespace description of the exact ECL-derived condition that activates the patent consequence."
+            },
+            "affected_rights": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": ".*\\S.*",
+              "description": "Non-whitespace description identifying the patent claims, acts, licensees, implementation scope, or other rights affected by the consequence."
+            }
+          },
+          "description": "Structured patent-specific consequence for normative ECL references. An ECL reference never imports unspecified patent consequences."
         }
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "provenance-only"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "purpose": {
+                "maxItems": 1
+              }
+            },
+            "not": {
+              "required": ["patent_specific_effect"]
+            }
+          }
+        },
         {
           "if": {
             "properties": {
@@ -382,7 +437,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"
@@ -421,10 +477,22 @@
       "properties": {
         "patent_or_application": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "claim": {
-          "type": ["integer", "string"]
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "maxLength": 12
+            }
+          ],
+          "description": "A single positive patent claim number; zero, negatives, empty strings, whitespace, and ranges are rejected."
         },
         "jurisdiction": {
           "type": "string"
