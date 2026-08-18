@@ -27,8 +27,8 @@
     },
     "status": {
       "type": "string",
-      "enum": ["draft", "candidate", "operative", "superseded", "withdrawn"],
-      "description": "Declared repository state only. Schema validation does not establish that an artifact is legally operative."
+      "enum": ["draft", "candidate", "superseded", "withdrawn"],
+      "description": "Declared non-operative repository state of this standalone PatentGrantManifest. Legal operativeness is represented only by a separately validated PatentGrantBundle/release record and cannot be asserted by this manifest."
     },
     "patent_license": {
       "type": "object",
@@ -149,7 +149,27 @@
           },
           "uniqueItems": true
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "enumerated-only"
+              }
+            },
+            "required": ["model"]
+          },
+          "then": {
+            "required": ["enumerated_claims"],
+            "properties": {
+              "enumerated_claims": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
     },
     "effective_date": {
       "type": "string",
@@ -251,9 +271,34 @@
         },
         "patent_specific_effect": {
           "type": "string",
-          "description": "Required by policy/review when the ECL reference has a normative patent effect; an ECL reference never imports unspecified patent consequences."
+          "minLength": 1,
+          "description": "Required whenever the ECL reference has any normative patent purpose; it must state the exact patent-specific consequence and an ECL reference never imports unspecified patent consequences."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "enum": [
+                    "eligibility-policy",
+                    "field-of-use-policy",
+                    "restricted-party-policy",
+                    "restricted-project-policy",
+                    "anti-circumvention-policy",
+                    "other"
+                  ]
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "required": ["patent_specific_effect"]
+          }
+        }
+      ]
     },
     "known_patents": {
       "type": "array",
@@ -333,7 +378,7 @@
     "artifactReference": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id"],
+      "required": ["id", "sha256"],
       "properties": {
         "id": {
           "type": "string",
