@@ -10,125 +10,89 @@ ECL-PL separates reusable legal text from project-specific patent grants:
 PatentLicenseRelease
         +
 PatentGrantManifest
+        +
+retained evidence members
         =
 PatentGrantBundle
 ```
 
-Every stable component and every operative bundle must be immutable and content-addressable.
+Every stable component and every operative bundle must be immutable and content-addressable. A manifest, evidence snapshot or maintainer action is not independently sufficient to create patent rights.
 
 ## 2. PatentLicenseRelease
 
-A `PatentLicenseRelease` is an exact immutable legal text artifact.
-
-Stable releases should use semantic versioning discipline:
+A `PatentLicenseRelease` is an exact immutable legal-text artifact. Stable releases should use semantic-versioning discipline:
 
 - `MAJOR` — materially incompatible change to grant scope, termination, definitions, restrictions, downstream rights or legal model;
-- `MINOR` — legally substantive but intended-compatible addition/clarification;
+- `MINOR` — legally substantive but intended-compatible addition or clarification;
 - `PATCH` — non-substantive editorial/corrective change only.
 
-Any uncertainty over whether a change affects rights should be treated conservatively as legally substantive and should receive delta review.
-
-Candidate display identifiers:
-
-```text
-ECL-PL-0.1.0-DRAFT
-ECL-PL-1.0.0
-ECL-PL-1.1.0
-```
-
-A version label is not enough for operative identity. Each release must also have a cryptographic content hash.
+Any uncertainty over whether a change affects rights should be treated conservatively as legally substantive and receive delta review. A version label is not operative identity; every release also has a cryptographic content hash.
 
 ## 3. PatentGrantManifest identity
 
 A `PatentGrantManifest` is an immutable declaration tied to one Patent Licensor and one exact PatentLicenseRelease.
 
-Suggested identifier form:
+Suggested display form:
 
 ```text
 ECL-PG-<issuer-slug>-<YYYYMMDD>-<sequence>
 ```
 
-Example:
+The human-readable identifier is not sufficient. The exact manifest bytes must be content-addressed.
+
+## 4. PatentGrantBundle format and identity
+
+A `PatentGrantBundle` is a closed immutable member set. It contains:
 
 ```text
-ECL-PG-example-labs-20261002-1
+BUNDLE-INDEX
+license/PATENT-LICENSE
+manifest/patent-grant.json
+evidence/...
 ```
 
-The human-readable identifier is not itself sufficient. The manifest must be content-addressed.
+`BUNDLE-INDEX` defines the bundle identity and all retained evidence. Its exact byte format is `ECL-PL-BUNDLE-INDEX-v1`:
 
-## 4. PatentGrantBundle identity
+1. UTF-8 only, no BOM.
+2. LF (`0x0A`) is the only line separator.
+3. The first line is exactly `ECL-PL-BUNDLE-INDEX-v1`.
+4. Every subsequent line is exactly `<lowercase-sha256><two ASCII spaces><canonical-member-path>`.
+5. The member list includes `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and **every** evidence member referenced by the manifest.
+6. Entries are sorted by the raw UTF-8 bytes of `canonical-member-path`, ascending.
+7. Each member path occurs exactly once.
+8. The index has one mandatory terminal LF.
+9. `BUNDLE-INDEX` does not list itself.
+10. A conforming package contains exactly `BUNDLE-INDEX` plus the members listed by it; missing or unindexed extra members are rejected.
 
-A PatentGrantBundle binds exactly:
+For every listed member, tooling hashes the exact member bytes and requires equality with the digest in the index. No path normalization, filesystem aliasing, symlink following, case folding, percent decoding, Unicode normalization or separator rewriting is permitted during lookup.
+
+The canonical machine identity is:
 
 ```text
-patent_license_id
-patent_license_sha256
-patent_grant_id
-patent_grant_sha256
+ECL-PL-BUNDLE-v1:<sha256-of-exact-BUNDLE-INDEX-bytes>
 ```
 
-A display form may be:
-
-```text
-ECL-PL-1.0.0@PG-example-labs-20261002-1
-```
-
-The canonical machine identity remains the exact component hashes.
+Therefore two packages cannot have the same bundle identity while differing in the license, manifest, retained evidence, member names or member hashes. Display identifiers may additionally mention the PatentLicenseRelease and PatentGrantManifest IDs, but they are not the canonical bundle identity.
 
 ## 5. No retroactive mutation
 
-Once a PatentGrantManifest is released, later changes must not edit that grant in place.
+Once a PatentGrantManifest or PatentGrantBundle is released, later changes must not edit that historical object in place. Addition/removal of patent identifiers, authority changes, assignments, encumbrances, patent status changes, ECL references, downstream policy, Covered Implementation, evidence or termination state require new immutable records as appropriate.
 
-Events such as the following must be represented as new records or new grant state, not rewritten history:
-
-- addition or removal of a patent/application identifier;
-- change in represented ownership or licensing authority;
-- assignment or acquisition;
-- newly discovered encumbrance;
-- patent grant, validation, lapse, abandonment, expiration, revocation or limitation;
-- change in ECL policy reference;
-- change in sublicensing/affiliate policy;
-- change in Covered Implementation; or
-- change in termination/reinstatement status.
-
-A later manifest may supersede a prior manifest for future grants or future policy, but cannot pretend the earlier legal state never existed.
+A later manifest may supersede a prior manifest for future use, but cannot rewrite the earlier legal or evidentiary state.
 
 ## 6. Legal changes versus provenance changes
 
-The repository must distinguish:
+A legal grant change alters permissions, restrictions, termination or grant scope and requires a new legally effective artifact plus applicable legal review.
 
-### Legal grant change
-
-A change intended to alter permissions, restrictions, termination or the scope of a grant.
-
-This requires a new legally effective artifact and applicable legal review. A metadata edit cannot silently change rights.
-
-### Provenance/status event
-
-A record describing facts such as assignment, expiration, abandonment or validation.
-
-A provenance event may affect how existing legal rights are understood under applicable law, but repository tooling must not manufacture that consequence. The record should preserve the event, evidence and date.
+A provenance/status event records facts such as assignment, expiration, abandonment or validation. Repository tooling may preserve evidence and chronology but must not manufacture legal consequences that depend on applicable law.
 
 ## 7. Optional ECL Bundle reference
 
-If a PatentGrantManifest uses an ECL policy reference, it must contain immutable identity sufficient to resolve the exact ECL Bundle.
-
-At minimum:
-
-```text
-ecl_bundle:
-  id: <exact bundle id>
-  license_sha256: <sha256>
-  schedule_sha256: <sha256>
-```
-
-A mutable ECL channel must never be stored as the operative reference.
-
-A later ECL Bundle does not change an existing PatentGrantManifest.
+An ECL policy reference must identify one exact immutable ECL Bundle by content hashes. A mutable ECL channel must never be an operative reference, and a later ECL Bundle cannot mutate an existing PatentGrantManifest.
 
 ## 8. Draft versus operative
 
-The repository must distinguish at least:
+The repository distinguishes at least:
 
 ```text
 draft
@@ -138,43 +102,15 @@ superseded
 withdrawn
 ```
 
-`operative` must be reserved for an exact PatentGrantBundle that satisfies the future release/legal-review gate.
+`operative` is reserved for an exact PatentGrantBundle that passes all future release/legal-review gates.
 
-An exact PatentGrantBundle must not become `operative` unless the named Patent Licensor, acting through an authenticated person or mechanism with asserted authority to bind that Patent Licensor, performs an attributable approval/adoption act that is cryptographically bound to the exact immutable bundle identity. Repository maintainers may record and verify that act, but maintainer publication or approval cannot substitute for Patent Licensor assent.
+The bundle must not become operative unless the named Patent Licensor, through an authenticated person or mechanism with asserted authority to bind that Patent Licensor, performs an attributable approval/adoption act cryptographically bound to the exact bundle identity. Maintainer publication or approval cannot substitute for Patent Licensor assent.
 
-The following do not by themselves make a grant operative:
-
-- merge to `main`;
-- schema validation;
-- a maintainer signature;
-- GitHub release publication;
-- a patent number appearing in the manifest;
-- a lawyer reviewing a different text; or
-- an ECL Bundle being operative.
+Merge to `main`, schema validity, maintainer signature, GitHub release publication, a patent number, review of different bytes, or an operative ECL Bundle do not independently make an ECL-PL grant operative.
 
 ## 9. Immutable legal-review inputs
 
-Before a PatentLicenseRelease or PatentGrantBundle is represented as stable/operative, qualified legal review must bind to immutable inputs.
-
-The future review structure should support a namespace such as:
-
-```text
-reviews/legal/inputs/<review_id>/
-  PATENT-LICENSE
-  ARCHITECTURE.md
-  TERMINOLOGY.md
-  COMPOSITION-WITH-ECL.md
-  VERSIONING.md
-  patent-grant.schema.json
-
-reviews/legal/records/<review_id>.json
-```
-
-A completed review record must hash the exact inputs it reviewed.
-
-Later legitimate edits to canonical `spec/` files must not retroactively invalidate a historical review; validation must use the frozen per-review inputs.
-
-Material changes after review require delta review against the exact changed artifact.
+Stable/operative artifacts require legal review bound to immutable inputs. Historical review inputs and records must remain frozen and content-addressed; later edits to canonical specifications do not retroactively alter what a reviewer reviewed. Material changes require delta review.
 
 ## 10. Grant release workflow
 
@@ -182,80 +118,101 @@ Expected workflow:
 
 ```text
 1. Select exact stable PatentLicenseRelease
-2. Prepare PatentGrantManifest
-3. Validate raw JSON lexical safety, syntax and schema
-4. Recompute and validate all declared local content hashes
-5. Resolve and verify patent-publication identities, registry metadata and retained provenance evidence
-6. Verify the Patent Licensor identity reference under its declared scheme
-7. Attach and resolve any exact ECL Bundle reference
-8. Complete grant-specific review required by policy
-9. Produce immutable PatentGrantBundle identity
-10. Obtain authenticated Patent Licensor approval/adoption bound to that exact bundle identity
-11. Preserve and verify the attributable approval record and its binding to the bundle
-12. Mark the PatentGrantBundle operative only if all release gates pass
+2. Prepare exact PatentGrantManifest bytes
+3. Validate raw JSON lexical safety before general parsing
+4. Parse and validate syntax/schema
+5. Recompute all declared hashes
+6. Resolve patent-publication identities and authoritative state
+7. Verify every retained evidence member against BUNDLE-INDEX
+8. Verify the Patent Licensor identity reference and retained attestation
+9. Resolve any exact ECL Bundle reference
+10. Complete grant-specific legal/policy review
+11. Construct canonical BUNDLE-INDEX and verify the closed member set
+12. Compute exact PatentGrantBundle identity
+13. Obtain authenticated Patent Licensor approval bound to that identity
+14. Preserve and verify the approval record
+15. Mark operative only if every gate passes
 ```
 
-### 10.1 Semantic machine-resolution gates
+### 10.1 Patent publication identity and state
 
-JSON Schema validation is necessary but is not sufficient for any manifest to become `candidate` or `operative`. Release tooling must fail closed unless all of the following semantic checks succeed.
+For every property key in `claim_scope.enumerated_claims` and `known_patents`, tooling must:
 
-#### Patent publication identity and state
+1. resolve the publication using the registry namespace embedded in `patentDocumentKey`;
+2. require the registry's canonical publication identifier to round-trip exactly to the manifest key;
+3. require `source` to identify the same publication record;
+4. derive/verify `kind` and reject contradictions;
+5. verify `status` at `provenance.recorded_at`;
+6. resolve `evidence_snapshot.bundle_path` by **literal canonical member-name equality** in `BUNDLE-INDEX`;
+7. require that path to appear exactly once in the index;
+8. hash the exact retained member bytes and match both the index digest and `evidence_snapshot.sha256`;
+9. require those bytes to substantiate the same publication identity, kind and status; and
+10. fail closed on missing, ambiguous, contradictory, aliased or unavailable data.
 
-For every property key in `claim_scope.enumerated_claims` and `known_patents`:
+Evidence bytes are bundle members, not mutable external snapshot identities.
 
-1. use the registry namespace embedded in the canonical `patentDocumentKey` to resolve the publication at the authoritative registry;
-2. require the registry's canonical publication identifier to round-trip exactly to the manifest key — aliases, serial/application-number spellings and alternate punctuation are not equivalent identities;
-3. require the manifest `source` HTTPS URI to resolve to the same publication record, not merely to the same registry home page;
-4. derive or verify the publication/document kind from the authoritative record and reject a contradictory `kind` value;
-5. verify the recorded `status` against authoritative evidence appropriate to `provenance.recorded_at`;
-6. locate the exact PatentGrantBundle member named by that patent entry's `evidence_snapshot.bundle_path`;
-7. hash the exact retained member bytes and require equality with `evidence_snapshot.sha256`;
-8. require those retained bytes to substantiate the same publication identity, kind and status observed at `provenance.recorded_at`; and
-9. reject a missing record, unsupported kind code, impossible authority/kind/number form, ambiguous match, stale alias, contradictory state, source mismatch, missing bundle member or evidence-hash mismatch.
+`provenance.recorded_at` requires a definite instant: `Z` or a known numeric UTC offset. RFC 3339 `-00:00` is rejected.
 
-The evidence snapshot is therefore not an external mutable URL. The bytes themselves are an immutable, content-addressed PatentGrantBundle member and must remain recoverable with the bundle for historical revalidation.
+For USPTO identifiers, A1/A2 application-publication identities use the 2001+ year-plus-seven-digit publication series. B1/B2 utility-patent kind codes are only valid for grants issued on or after January 2, 2001; the schema therefore excludes numbers below `6,167,569`; USPTO records show Nos. 6,167,567 and 6,167,568 were issued on December 26, 2000 under the old `A` kind, while No. 6,167,569 issued on January 2, 2001 as `B1`. Registry round-trip remains mandatory; schema syntax alone is never evidence that a document exists.
 
-`provenance.recorded_at` is an assertion-level RFC 3339 timestamp with a **known** offset. `Z` and explicit numeric offsets are permitted; the RFC 3339 unknown-offset marker `-00:00` is forbidden. Release tooling must not accept a non-date placeholder, an unknown offset, or silently substitute its own current time.
+### 10.2 Patent Licensor identity schemes
 
-A syntactically valid key therefore cannot manufacture a patent publication, override authoritative registry metadata or leave a historical status assertion dependent on an unretained mutable registry response.
+Legal entities may use public, authority-specific identifiers (`lei`, `company-registry`, `court-or-agency-record`, or `other-authoritative-registry`) with a corroborating HTTPS record and integrity evidence.
 
-For USPTO identifiers, schema-level canonicalization intentionally distinguishes post-2000 kind-code families: A1/A2 application-publication identities use the four-digit publication year plus seven-digit annual sequence, and B1/B2 patent grants require a seven- or eight-digit patent number. Release tooling must still round-trip every identifier through the authoritative registry; schema syntax is not evidence that a publication exists.
+Individuals use only:
 
-#### Patent Licensor identity schemes
+```text
+scheme: authoritative-opaque-token
+identifier: idtok:v1:<base64url-token>
+attestation_snapshot:
+  bundle_path: evidence/identity/<canonical-member>
+  sha256: <digest>
+```
 
-`patent_licensor.identity_reference` must be verified using the declared `scheme` and `record_uri`. The identifier grammar is scheme-specific.
+The token protocol is deliberately **not** a hash of a DNI, SSN, passport number or other low-entropy identifier:
 
-For an `individual`, the manifest permits only `scheme: government-id-hash` with the explicit `sha256:<digest>` representation. Court, agency and other public-record locator schemes are deliberately reserved for legal entities because a prefixed free-form locator can itself contain a plaintext personal identifier.
+1. an authoritative identity verifier generates at least 256 bits of cryptographically secure random entropy;
+2. the token payload is unpadded base64url of that random value and is prefixed `idtok:v1:`;
+3. the token must be statistically independent of government-ID spelling, number, date of birth, name or other enumerable personal data;
+4. the verifier produces an authenticated attestation binding the opaque token to the named Patent Licensor and relevant jurisdiction/verification event without embedding the plaintext government identifier;
+5. the exact attestation bytes are retained as an indexed `evidence/identity/...` bundle member; and
+6. release tooling verifies the attestation and its snapshot hash according to the verifier profile.
 
-Accordingly, values such as `case:SSN-...`, `record:<government-id>` or `public-record:ssn:...` cannot be made acceptable merely by adding a record prefix. Release tooling must fail closed on any scheme/subject mismatch or a `record_uri` that does not corroborate the named Patent Licensor. Tooling must never publish, derive, request or substitute the plaintext government identifier into the manifest.
+For an individual, `record_uri` and plaintext-derived identity fields are forbidden. Tooling must never derive, request, insert or publish a plaintext government identifier in the manifest, bundle index, evidence member path or identity token.
 
-#### Raw JSON Unicode-scalar gate
+### 10.3 Raw JSON lexical gate
 
-Before passing manifest bytes to a general JSON parser, release tooling must perform a lossless lexical validation over the exact raw UTF-8 JSON bytes:
+Before a general JSON parser sees the manifest bytes, release tooling must perform lossless lexical validation over exact raw UTF-8 bytes:
 
-1. require strict UTF-8 input and reject a BOM, malformed byte sequence or any decoder replacement;
-2. tokenize JSON strings without normalizing or decoding away escape structure;
-3. for every raw `\uXXXX` escape, reject a low-surrogate escape (`\uDC00`–`\uDFFF`) unless it is immediately paired with a preceding high-surrogate escape in the same JSON string;
-4. require every high-surrogate escape (`\uD800`–`\uDBFF`) to be immediately followed by a low-surrogate `\uXXXX` escape in the same string;
-5. reject any unpaired surrogate escape before invoking a parser that might replace it with U+FFFD; and
-6. only after this lexical gate may the manifest be parsed and schema-validated.
+1. reject BOM, malformed UTF-8 and decoder replacement;
+2. tokenize all JSON strings while preserving escape structure;
+3. reject unpaired UTF-16 surrogate escapes before any parser can replace them;
+4. decode object-member names according to JSON string escape rules **without Unicode normalization**;
+5. within each object scope, reject any duplicate decoded member name, including escape-equivalent spellings such as `"status"` and `"\u0073tatus"`;
+6. compare decoded member names by exact Unicode scalar sequence; NFC/NFKC or case folding is not performed;
+7. only after these checks may the bytes be passed to the general parser and schema validator.
 
-A release implementation is non-conforming if its parser silently replaces malformed surrogate escapes and the release gate then hashes the replacement. Implementations may instead use a JSON parser that itself rejects unpaired surrogate escapes, provided that behavior is tested and guaranteed for the release path.
+A parser configuration that independently guarantees strict UTF-8, rejects unpaired surrogates and rejects duplicate decoded member names is conforming only if those properties are tested on the release path.
 
-#### Combination-rule hash binding
+### 10.4 Canonical evidence paths
 
-For `claim_scope.combination_expansion: rule-based`, `combination_rule.hash_mode` is `utf8-json-string-value-v1`.
+Every `evidence_snapshot.bundle_path` is a canonical relative member path:
 
-After the raw JSON Unicode-scalar gate has succeeded, the bytes hashed for `rule_sha256` are exactly:
+- `/` is the only separator;
+- it begins with `evidence/patents/` or `evidence/identity/`;
+- every subsequent segment begins with an ASCII alphanumeric character and contains only ASCII alphanumerics, `.`, `_` or `-`;
+- empty segments, `.` segments, `..` segments, repeated separators, leading/trailing separators and backslashes are impossible/forbidden;
+- lookup uses the literal UTF-8 member-name bytes from `BUNDLE-INDEX`; a filesystem-normalized equivalent is not an alias.
 
-1. take the parsed Unicode scalar-value string of `combination_rule.rule_text` after JSON escape decoding;
-2. encode that accepted string as UTF-8 with strict error handling and no BOM;
-3. perform no Unicode normalization, newline conversion, whitespace trimming, replacement-character substitution or other transformation; and
-4. append no terminating newline or NUL byte.
+### 10.5 Combination-rule hash binding
 
-Release tooling must recompute SHA-256 over exactly those bytes and require equality with `rule_sha256`. The rule text must itself contain the complete controlling rule; an indirect instruction such as `See applicable rule` cannot be cured by attaching an arbitrary hash.
+For `claim_scope.combination_expansion: rule-based`, `hash_mode` is `utf8-json-string-value-v1`.
 
-The approval/adoption record must identify the Patent Licensor, the approving actor or authenticated mechanism, the authority asserted for that act, the exact bundle identity being adopted, the time of the act, and integrity information sufficient to detect substitution. A later approval of different hashes cannot retroactively adopt an earlier bundle.
+After the lexical gate succeeds, `rule_sha256` hashes exactly the strict UTF-8 encoding of the parsed Unicode scalar-value `rule_text`, with no BOM, Unicode normalization, newline conversion, trimming, replacement substitution, terminal newline or NUL. Tooling recomputes and compares the digest. Indirect placeholders such as `See applicable rule` are not complete controlling rules.
+
+### 10.6 Patent Licensor approval
+
+The approval/adoption record identifies the Patent Licensor, approving actor/mechanism, asserted authority, exact `ECL-PL-BUNDLE-v1:<digest>` identity, act time and integrity/authentication evidence. Approval of a different bundle identity cannot retroactively approve this one.
 
 Tooling may verify integrity, authentication evidence and declared state. It must not pretend to determine patent ownership, legal authority, claim coverage, enforceability, infringement, exhaustion or lawyer competence.
 
@@ -270,13 +227,17 @@ grants/
   <grant-id>.json
 
 bundles/
-  <bundle-id>.json
-  evidence/
-    patents/
-      <retained-snapshot>
-
-provenance/
-  <grant-or-family-id>/
+  <bundle-id>/
+    BUNDLE-INDEX
+    license/
+      PATENT-LICENSE
+    manifest/
+      patent-grant.json
+    evidence/
+      patents/
+        <retained-snapshot>
+      identity/
+        <retained-attestation>
 
 reviews/
   legal/
@@ -284,24 +245,16 @@ reviews/
     records/
 ```
 
-The precise layout may change before the first stable release, but the separation between immutable legal text, immutable grant declaration, retained provenance evidence and review records should remain.
+Physical packaging may later use an archive, but a packaging format must preserve the logical member names and exact indexed bytes. Symlinks and archive path aliases are not bundle semantics.
 
 ## 12. Revocation, withdrawal and termination
 
-Repository state must distinguish:
+Repository state distinguishes withdrawal of an unpublished/draft grant, supersession for future use, termination of a particular licensee's rights, expiration/lapse/revocation of a patent right, and assignment. These are not interchangeable.
 
-- **withdrawal of an unpublished/draft grant**;
-- **supersession for future use**;
-- **termination of a particular licensee's rights under the operative legal text**;
-- **expiration/lapse/revocation of a patent right**; and
-- **assignment of the patent to another owner**.
+A maintainer must not mark an immutable grant file `revoked` and assume that repository action legally rescinds previously granted rights. Legal consequence comes from the operative patent licence and applicable law; the repository records immutable events.
 
-These are not interchangeable.
+## 13. Hash and canonicalization policy
 
-A maintainer must not mark an immutable grant file `revoked` and assume that action legally rescinds previously granted rights. The legal consequence must come from the operative patent licence and applicable law, while the repository records the event immutably.
-
-## 13. Hash algorithm
-
-SHA-256 is the initial content-addressing algorithm for interoperability with the ECL ecosystem. The canonicalization rules for JSON artifacts must be defined before stable release so hashes are reproducible across tooling.
+SHA-256 is the initial content-addressing algorithm. `BUNDLE-INDEX` canonicalization is defined in section 4. JSON artifact canonicalization for any future JSON-level content identity must be specified before stable release; until then, when exact JSON bytes are hashed, the hash is over those exact retained bytes rather than an implementation-dependent reserialization.
 
 A future algorithm migration must preserve old identities and must not rewrite historical artifacts.
