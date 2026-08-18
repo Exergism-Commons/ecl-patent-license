@@ -184,15 +184,51 @@ Expected workflow:
 1. Select exact stable PatentLicenseRelease
 2. Prepare PatentGrantManifest
 3. Validate syntax/schema
-4. Validate content hashes
-5. Check required provenance fields
-6. Attach any exact ECL Bundle reference
-7. Complete grant-specific review required by policy
-8. Produce immutable PatentGrantBundle identity
-9. Obtain authenticated Patent Licensor approval/adoption bound to that exact bundle identity
-10. Preserve and verify the attributable approval record and its binding to the bundle
-11. Mark the PatentGrantBundle operative only if all release gates pass
+4. Recompute and validate all declared local content hashes
+5. Resolve and verify patent-publication identities, registry metadata and provenance sources
+6. Verify the Patent Licensor identity reference under its declared scheme
+7. Attach and resolve any exact ECL Bundle reference
+8. Complete grant-specific review required by policy
+9. Produce immutable PatentGrantBundle identity
+10. Obtain authenticated Patent Licensor approval/adoption bound to that exact bundle identity
+11. Preserve and verify the attributable approval record and its binding to the bundle
+12. Mark the PatentGrantBundle operative only if all release gates pass
 ```
+
+### 10.1 Semantic machine-resolution gates
+
+JSON Schema validation is necessary but is not sufficient for any manifest to become `candidate` or `operative`. Release tooling must fail closed unless all of the following semantic checks succeed.
+
+#### Patent publication identity and state
+
+For every property key in `claim_scope.enumerated_claims` and `known_patents`:
+
+1. use the registry namespace embedded in the canonical `patentDocumentKey` to resolve the publication at the authoritative registry;
+2. require the registry's canonical publication identifier to round-trip exactly to the manifest key — aliases, serial/application-number spellings and alternate punctuation are not equivalent identities;
+3. require the manifest `source` HTTPS URI to resolve to the same publication record, not merely to the same registry home page;
+4. derive or verify the publication/document kind from the authoritative record and reject a contradictory `kind` value;
+5. verify the recorded `status` against authoritative evidence appropriate to the manifest's provenance time, and preserve the evidence hash used for that assertion; and
+6. reject a missing record, unsupported kind code, all-zero identifier, ambiguous match, stale alias, contradictory state or source mismatch.
+
+A syntactically valid key therefore cannot manufacture a patent publication or override authoritative registry metadata.
+
+#### Patent Licensor identity schemes
+
+`patent_licensor.identity_reference` must be verified using the declared `scheme` and `record_uri`. The identifier grammar is scheme-specific. In particular, `government-id-hash` is a one-way privacy-preserving token and release tooling must never publish, derive, request or substitute the plaintext government identifier into the manifest. A scheme/subject mismatch or a `record_uri` that does not corroborate the named Patent Licensor fails the release gate.
+
+#### Combination-rule hash binding
+
+For `claim_scope.combination_expansion: rule-based`, `combination_rule.hash_mode` is `utf8-json-string-value-v1`.
+
+The bytes hashed for `rule_sha256` are exactly:
+
+1. parse the manifest JSON successfully;
+2. take the resulting Unicode string value of `combination_rule.rule_text` after JSON escape decoding;
+3. encode that string as UTF-8 with no BOM;
+4. perform no Unicode normalization, newline conversion, whitespace trimming or other transformation; and
+5. append no terminating newline or NUL byte.
+
+Release tooling must recompute SHA-256 over exactly those bytes and require equality with `rule_sha256`. The rule text must itself contain the complete controlling rule; an indirect instruction such as `See applicable rule` cannot be cured by attaching an arbitrary hash.
 
 The approval/adoption record must identify the Patent Licensor, the approving actor or authenticated mechanism, the authority asserted for that act, the exact bundle identity being adopted, the time of the act, and integrity information sufficient to detect substitution. A later approval of different hashes cannot retroactively adopt an earlier bundle.
 
