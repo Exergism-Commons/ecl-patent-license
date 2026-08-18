@@ -168,6 +168,9 @@
           "then": {
             "required": ["enumerated_claims"],
             "properties": {
+              "later_acquired_claims": {
+                "const": "excluded-unless-added"
+              },
               "enumerated_claims": {
                 "minItems": 1
               }
@@ -178,7 +181,9 @@
     },
     "effective_date": {
       "type": "string",
-      "format": "date"
+      "format": "date",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+      "description": "Calendar-date syntax is asserted by pattern even when a validator treats format as annotation; format-aware validation should additionally enforce calendar validity."
     },
     "expiration_policy": {
       "type": "string",
@@ -213,7 +218,26 @@
           "type": "string",
           "enum": ["direct-grant", "derivative-right", "no-express-grant", "conditional", "not-decided"]
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": ["sublicense-chain", "hybrid"]
+              }
+            },
+            "required": ["model"]
+          },
+          "then": {
+            "properties": {
+              "sublicensing": {
+                "enum": ["expressly-granted", "conditional"]
+              }
+            }
+          }
+        }
+      ]
     },
     "defensive_termination": {
       "type": "object",
@@ -260,6 +284,7 @@
         "purpose": {
           "type": "array",
           "minItems": 1,
+          "maxItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -273,7 +298,7 @@
               "other"
             ]
           },
-          "description": "provenance-only is exclusive and may not be combined with any normative policy purpose."
+          "description": "Exactly one purpose per ECL reference. Normative purposes therefore map unambiguously to exactly one patent-specific effect; provenance-only remains non-normative."
         },
         "patent_specific_effect": {
           "type": "object",
@@ -291,21 +316,108 @@
               ]
             },
             "trigger": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000,
-              "pattern": ".*\\S.*",
-              "description": "Non-whitespace description of the exact ECL-derived condition that activates the patent consequence."
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["category", "detail"],
+              "properties": {
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "eligibility-status",
+                    "field-of-use-classification",
+                    "restricted-party-classification",
+                    "restricted-project-classification",
+                    "anti-circumvention-condition",
+                    "other-explicit-condition"
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 2000,
+                  "pattern": ".*\\S.*",
+                  "not": {
+                    "enum": ["none", "None", "NONE", "n/a", "N/A", "na", "NA", "unknown", "Unknown", "UNKNOWN", "tbd", "TBD", "applies", "Applies", "not-decided"]
+                  }
+                }
+              },
+              "description": "Typed ECL-derived condition plus a substantive non-placeholder detail identifying what activates the consequence."
             },
             "affected_rights": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000,
-              "pattern": ".*\\S.*",
-              "description": "Non-whitespace description identifying the patent claims, acts, licensees, implementation scope, or other rights affected by the consequence."
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["scope", "detail"],
+              "properties": {
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "initial-grant",
+                    "all-granted-rights",
+                    "enumerated-claims",
+                    "patent-acts",
+                    "covered-implementation",
+                    "licensee-rights",
+                    "other-explicit-scope"
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 2000,
+                  "pattern": ".*\\S.*",
+                  "not": {
+                    "enum": ["none", "None", "NONE", "n/a", "N/A", "na", "NA", "unknown", "Unknown", "UNKNOWN", "tbd", "TBD", "applies", "Applies", "not-decided"]
+                  }
+                }
+              },
+              "description": "Typed patent-right scope plus a substantive non-placeholder detail identifying the claims, acts, implementation boundary, licensees, or other rights affected."
             }
           },
-          "description": "Structured patent-specific consequence for normative ECL references. An ECL reference never imports unspecified patent consequences."
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "consequence": {
+                    "enum": ["withhold-initial-grant", "condition-initial-grant"]
+                  }
+                },
+                "required": ["consequence"]
+              },
+              "then": {
+                "properties": {
+                  "affected_rights": {
+                    "properties": {
+                      "scope": {
+                        "const": "initial-grant"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "consequence": {
+                    "enum": ["terminate-existing-rights", "suspend-existing-rights", "limit-existing-rights"]
+                  }
+                },
+                "required": ["consequence"]
+              },
+              "then": {
+                "properties": {
+                  "affected_rights": {
+                    "properties": {
+                      "scope": {
+                        "enum": ["all-granted-rights", "enumerated-claims", "patent-acts", "covered-implementation", "licensee-rights", "other-explicit-scope"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Structured patent-specific consequence for one normative ECL purpose. An ECL reference never imports unspecified patent consequences."
         }
       },
       "allOf": [
@@ -321,11 +433,6 @@
             "required": ["purpose"]
           },
           "then": {
-            "properties": {
-              "purpose": {
-                "maxItems": 1
-              }
-            },
             "not": {
               "required": ["patent_specific_effect"]
             }
@@ -351,6 +458,168 @@
           },
           "then": {
             "required": ["patent_specific_effect"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "eligibility-policy"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "eligibility-status"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "field-of-use-policy"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "field-of-use-classification"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "restricted-party-policy"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "restricted-party-classification"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "restricted-project-policy"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "restricted-project-classification"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "anti-circumvention-policy"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "anti-circumvention-condition"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "purpose": {
+                "contains": {
+                  "const": "other"
+                }
+              }
+            },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "patent_specific_effect": {
+                "properties": {
+                  "trigger": {
+                    "properties": {
+                      "category": {
+                        "const": "other-explicit-condition"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       ]
@@ -481,18 +750,9 @@
           "pattern": ".*\\S.*"
         },
         "claim": {
-          "oneOf": [
-            {
-              "type": "integer",
-              "minimum": 1
-            },
-            {
-              "type": "string",
-              "pattern": "^[1-9][0-9]*$",
-              "maxLength": 12
-            }
-          ],
-          "description": "A single positive patent claim number; zero, negatives, empty strings, whitespace, and ranges are rejected."
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,11}$",
+          "description": "Canonical positive patent claim number encoded as a digit string of at most 12 digits; numeric JSON values, zero, negatives, whitespace, and ranges are rejected to avoid parser-dependent rounding."
         },
         "jurisdiction": {
           "type": "string"
