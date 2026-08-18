@@ -75,6 +75,29 @@ A PatentGrantBundle must not incorporate as operative patent policy:
 
 If a PatentGrantBundle incorporates ECL policy, it must identify the exact immutable ECL Bundle and its content identity.
 
+### 5.1 Canonical ECL policy-item resolution gate
+
+A normative `ecl_bundle_reference.patent_specific_effect.trigger.policy_item` is not satisfied by a human-readable label or by schema validity alone.
+
+The canonical pointer is the tuple:
+
+```text
+(exact ECL artifact, item kind, 1-based start line, line count, selected-text SHA-256)
+```
+
+where the artifact is exactly `license` or `schedule` from the ECL Bundle identified by `license_sha256` and `schedule_sha256`.
+
+Before a PatentGrantBundle may become a release candidate or operative, release tooling must:
+
+1. load the exact content-addressed ECL artifact identified by the corresponding bundle hash;
+2. reject a pointer whose line range is out of bounds or otherwise does not resolve exactly once;
+3. select exactly the declared line range after repository-standard UTF-8 decoding and LF newline normalization;
+4. hash the selected UTF-8/LF bytes and require equality with `policy_item.text_sha256`;
+5. verify under the canonical ECL parser/release metadata that the resolved range is an item of the declared `kind`; and
+6. fail closed on any missing artifact, hash mismatch, parser disagreement, ambiguous target or unresolved item.
+
+Equivalent prose labels, alternate anchors, shortened names and other aliases are not interchangeable pointer identities. A publisher that wishes to reference a different range must publish a different manifest identity. This resolver gate is semantic release validation in addition to JSON Schema validation.
+
 ## 6. Non-retroactivity
 
 Later changes to ECL, ECL governance, ECL Schedules or ECL tooling do not change an already issued PatentGrantBundle.
