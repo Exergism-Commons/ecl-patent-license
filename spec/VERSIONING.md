@@ -140,6 +140,8 @@ withdrawn
 
 `operative` must be reserved for an exact PatentGrantBundle that satisfies the future release/legal-review gate.
 
+An exact PatentGrantBundle must not become `operative` unless the named Patent Licensor, acting through an authenticated person or mechanism with asserted authority to bind that Patent Licensor, performs an attributable approval/adoption act that is cryptographically bound to the exact immutable bundle identity. Repository maintainers may record and verify that act, but maintainer publication or approval cannot substitute for Patent Licensor assent.
+
 The following do not by themselves make a grant operative:
 
 - merge to `main`;
@@ -186,11 +188,15 @@ Expected workflow:
 5. Check required provenance fields
 6. Attach any exact ECL Bundle reference
 7. Complete grant-specific review required by policy
-8. Produce PatentGrantBundle manifest
-9. Mark operative only if all release gates pass
+8. Produce immutable PatentGrantBundle identity
+9. Obtain authenticated Patent Licensor approval/adoption bound to that exact bundle identity
+10. Preserve and verify the attributable approval record and its binding to the bundle
+11. Mark the PatentGrantBundle operative only if all release gates pass
 ```
 
-Tooling may verify integrity and declared state. It must not pretend to determine patent ownership, legal authority, claim coverage, enforceability, infringement, exhaustion or lawyer competence.
+The approval/adoption record must identify the Patent Licensor, the approving actor or authenticated mechanism, the authority asserted for that act, the exact bundle identity being adopted, the time of the act, and integrity information sufficient to detect substitution. A later approval of different hashes cannot retroactively adopt an earlier bundle.
+
+Tooling may verify integrity, authentication evidence and declared state. It must not pretend to determine patent ownership, legal authority, claim coverage, enforceability, infringement, exhaustion or lawyer competence.
 
 ## 11. Suggested repository layout
 
