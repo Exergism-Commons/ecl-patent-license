@@ -140,11 +140,11 @@ After record 0 has been read and `BUNDLE-INDEX` has passed its own canonical par
 
 1. record 0 is the physical `BUNDLE-INDEX` and is **not** required or permitted to list its own digest; `spec/VERSIONING.md` section 4 rule 10 continues to forbid self-listing;
 2. the SHA-256 of record 0's exact payload MUST nevertheless be computed and bound separately wherever the PatentGrantBundle identity, release record and privacy-review record require the exact `BUNDLE-INDEX` digest;
-3. the set of paths in records 1 through `N-1` MUST equal exactly the set of non-index physical member paths required by that `BUNDLE-INDEX` plus the transitive-evidence rules applicable to the bundle;
-4. every indexed path MUST occur exactly once as one record in records 1 through `N-1`;
-5. no record in records 1 through `N-1` may exist outside that required set;
-6. for **records 1 through `N-1` only**, each payload SHA-256 MUST equal the digest declared for that path by `BUNDLE-INDEX` or the applicable fixed/transitive rule; and
-7. `member_count` MUST equal one plus the number of non-index physical members.
+3. the set of paths in records 1 through `N-1` MUST equal exactly the set of non-index member paths listed by that canonical `BUNDLE-INDEX`;
+4. before the container can proceed to legal-operativeness processing, the `BUNDLE-INDEX` member set itself MUST independently satisfy the applicable evidence-closure rules in `spec/VERSIONING.md` and `spec/SECURITY-PROFILE.md`; those rules cannot authorize an unindexed physical member;
+5. every indexed path MUST occur exactly once as one record in records 1 through `N-1`, and no record in that range may exist outside the indexed set;
+6. for **records 1 through `N-1` only**, each payload SHA-256 MUST equal the digest declared for that exact path by `BUNDLE-INDEX`; and
+7. `member_count` MUST equal one plus the number of indexed non-index members.
 
 A mismatch in count, path set or any required digest fails closed before legal-operativeness processing. The `BUNDLE-INDEX` digest is deliberately verified through the separate bundle-identity/release/privacy bindings rather than by a prohibited self-entry.
 
