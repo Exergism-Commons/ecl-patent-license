@@ -27,6 +27,12 @@ Retained evidence supports identity, provenance and reproducible validation. It 
 
 Schema validity, a Git commit, a merge to a default branch, a release tag, maintainer approval, automated review, or repository publication does not by itself make a PatentGrantBundle operative or create patent rights.
 
+0.6 Defensive-commons orientation.
+
+The intended structure of this PatentLicenseRelease is a broad public direct patent grant combined with only those defensive or ECL-derived patent consequences that an exact operative PatentGrantBundle expressly selects. The purpose of that structure is to reduce the exclusionary value of Covered Patent Claims against peaceful practice of the Covered Implementation while preserving narrowly bounded defensive use of the Patent Licensor's own patent permissions against specified patent aggression or exact ECL policy outcomes.
+
+Nothing in this Section creates collective patent ownership, a patent pool, an obligation to assert a patent, an automatic cross-bundle retaliation rule, or any patent consequence not otherwise created by an operative PatentGrantBundle under this License.
+
 1. DEFINITIONS
 
 1.1 "Affiliate" means an entity that directly or indirectly controls, is controlled by, or is under common control with another entity. "Control" means the present power to direct the management of the entity, whether through ownership of more than fifty percent of voting interests, contractual power, or another legally effective means. Affiliate status does not itself expand or reduce the public direct grant in this version.
@@ -194,27 +200,67 @@ Reliance on this License does not require You to surrender a broader Independent
 
 8.1 No implicit ECL effect.
 
-An ECL Bundle, ECL licence, ECL Schedule, Restricted Party designation, Restricted Project designation or other ECL state has no patent-law effect under this License unless the exact PatentGrantManifest contains an immutable ecl_bundle_reference whose purpose is normative and whose patent_specific_effect expressly defines the patent consequence, trigger and affected rights.
+An ECL Bundle, ECL licence, ECL Schedule, Restricted Party designation, Restricted Project designation, Exergism assessment, dossier, governance record, registry entry or other ECL state has no patent-law effect under this License unless the exact PatentGrantManifest contains an immutable ecl_bundle_reference whose purpose is normative and whose patent_specific_effect expressly defines the patent consequence, trigger and affected rights.
 
-8.2 Provenance-only references.
+8.2 ECL decision boundary; no score-to-patent rule.
+
+Formal Exergism scores, variables, uncertainty intervals, dossiers, evidence items, update signals, governance proposals, registry records and review outputs are upstream inputs to ECL governance. None of them independently withholds, conditions, suspends, limits or terminates an ECL-PL patent permission.
+
+Where this License composes with ECL, the patent-policy input is the exact legal or governance classification produced under the exact immutable ECL Bundle identified by the PatentGrantManifest, together with the exact policy item and patent_specific_effect selected by that manifest. A numerical threshold, machine-learning score, mutable dashboard value, current registry state or later governance decision MUST NOT be substituted for that exact incorporated rule or classification.
+
+This Section does not prevent an exact ECL Bundle from using evidence or formal Exergism analysis upstream of its own classification process. It prevents ECL-PL from inventing an automatic numerical patent sanction that the exact ECL Bundle did not itself create.
+
+8.3 Provenance-only references.
 
 If ecl_bundle_reference.purpose is provenance-only, the reference has no effect on the existence, scope, suspension or termination of patent rights under this License.
 
-8.3 Exact immutable policy only.
+8.4 Exact immutable policy only.
 
-A normative ECL reference applies only to the exact referenced ECL Bundle and exact policy item identified by the PatentGrantManifest. A later ECL release, later Schedule, mutable channel, branch, registry view or changed policy text cannot alter an existing PatentGrantBundle.
+A normative ECL reference applies only to the exact referenced ECL Bundle and exact policy item identified by the PatentGrantManifest. A later ECL release, later Schedule, mutable channel, branch, registry view, changed score, changed dossier, changed governance state or changed policy text cannot alter an existing PatentGrantBundle.
 
-8.4 Patent-specific consequence.
+The rule incorporated by the PatentGrantBundle is frozen even where the rule evaluates conduct or relationships that occur after the PatentGrantBundle becomes operative. Later facts may be evaluated only under that frozen rule and only where the exact patent_specific_effect makes that temporal operation objectively knowable; later ECL governance cannot silently replace the rule.
+
+8.5 Restricted Party translation.
+
+If ecl_bundle_reference.purpose is restricted-party-policy, a patent restriction may arise only from Restricted Party status as that status is defined and resolved by the exact incorporated ECL Bundle and exact policy item.
+
+Where the incorporated ECL Schedule distinguishes an unrestricted designation from a scoped or capacity-limited designation, ECL-PL MUST preserve that boundary. In particular, an ECL `R` designation may affect the exact person, entity, apparatus or class within the scope actually stated by that Schedule entry; an ECL `S` designation may affect patent eligibility or rights only while the actor is acting in the exact restricted capacity, project, function or scope identified by the incorporated Schedule and ECL terms. ECL-PL MUST NOT broaden an `S` designation into a person-wide or entity-wide patent exclusion.
+
+An `Under Review`, `U`, `N`, omitted, unresolved, dossier-only, registry-only or score-only state has no Restricted Party patent effect under this Section unless the exact incorporated ECL License and Schedule expressly give that exact state operative Restricted Party effect. Omission from a Schedule is not affirmative proof of unrestricted status and does not authorize a publisher to invent a classification.
+
+8.6 Restricted Project translation.
+
+If ecl_bundle_reference.purpose is restricted-project-policy, a patent restriction may arise only where the relevant project satisfies the exact Restricted Project rule of the incorporated ECL Bundle and exact policy item.
+
+If the exact ECL rule treats a project as Restricted because of direct Schedule designation, Material Participation, a Covered Associate relationship, acting at the direction of or primarily for the material benefit of a Restricted Party, or deliberate circumvention, ECL-PL may use that result only to the extent the exact patent_specific_effect expressly selects that patent consequence. The ECL rule remains the source of the project classification; ECL-PL does not create a broader graph-reachability, guilt-by-association or unlimited affiliate rule.
+
+Where project status depends on facts rather than a direct Schedule entry, the relevant conduct, relationship, knowledge standard and time must be determined under the exact frozen ECL rule and the exact manifest-defined patent trigger. A mutable registry or later governance output cannot be used as a substitute for that determination.
+
+8.7 ECL exclusions and remediation travel with the incorporated classification.
+
+A PatentGrantBundle that uses ECL Restricted Party or Restricted Project policy MUST preserve every material exclusion, scope limitation, anti-association safeguard and applicable Independent Remediation Activity protection contained in the exact incorporated ECL Bundle and policy item. ECL-PL MUST NOT use the patent layer to convert excluded judicial, audit, legal-defence, accountability, humanitarian, remedial or otherwise expressly excluded activity into a broader patent restriction.
+
+If the exact ECL classification cannot be applied without ignoring an incorporated exclusion or scope limitation, the corresponding ECL-derived patent restriction is not eligible for operativeness under this PatentLicenseRelease.
+
+8.8 Patent-specific consequence.
 
 Where a normative ECL reference is present, only the exact consequence selected in patent_specific_effect may operate: withholding or conditioning an initial grant, or terminating, suspending or limiting specified existing rights. The trigger and affected_rights fields must be applied narrowly to their exact identified scope. No broader copyright consequence, ECL remedy or repository state is imported by implication.
 
 A suspension or limitation whose commencement, scope or end condition cannot be determined objectively from the exact immutable policy item and patent_specific_effect is not eligible for operativeness under this PatentLicenseRelease.
 
-8.5 Public direct grant and initial eligibility.
+8.9 Public direct grant and initial eligibility.
 
-Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1. An intermediary cannot cure that ineligibility by transferring the Covered Implementation or purporting to sublicense ECL-PL rights.
+Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the exact incorporated trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1 for the affected rights. An intermediary cannot cure that ineligibility by transferring the Covered Implementation, changing a commercial label, routing activity through an Affiliate or contractor, or purporting to sublicense ECL-PL rights.
 
-8.6 Mandatory-law and prior-commitment limit.
+Conversely, a person is not excluded from the public direct grant merely because an upstream Exergism assessment is unfavorable or because a dossier, registry record or governance proposal concerns that person. The exact incorporated ECL classification and exact patent_specific_effect control.
+
+8.10 Anti-circumvention composition.
+
+If ecl_bundle_reference.purpose is anti-circumvention-policy, only the exact anti-circumvention rule and exact patent consequence identified by the immutable ECL policy item and PatentGrantManifest may operate. The patent layer does not create a general power to disregard separate legal personality, ownership, contracting chains or other relationships merely because a Patent Licensor believes circumvention occurred.
+
+Nothing in this Section prevents the independently applicable Section 6 rule that a person must qualify for the public direct grant in its own right.
+
+8.11 Mandatory-law and prior-commitment limit.
 
 An ECL-referenced patent restriction operates only to the extent permitted by applicable patent law, competition law, exhaustion doctrine, non-waivable law and any prior standards, FRAND/RAND, patent-pool, covenant or other commitment binding the Patent Licensor. This License does not authorize discrimination or field-of-use restrictions that the Patent Licensor is legally prohibited from imposing.
 
@@ -251,6 +297,10 @@ A cure_or_withdrawal value of conditional is not supported by Version 1.0.0-draf
 9.6 Other recipients are evaluated independently.
 
 Termination of one Patent Licensee does not automatically terminate the direct grant of another independently qualifying Patent Licensee. There is no sublicense chain in Version 1.0.0-draft.1 to collapse when one recipient terminates. Exhaustion and Independent Patent Permissions remain unaffected.
+
+9.7 Defensive commons are bundle-several, not collectively inferred.
+
+Multiple Patent Licensors may independently publish PatentGrantBundles containing equivalent defensive profiles, which can create a distributed defensive effect in practice. But an offensive assertion does not automatically terminate every ECL-PL grant in an ecosystem. Each PatentGrantBundle must independently contain an applicable termination or policy rule, and each Patent Licensor may affect only the patent permissions that Patent Licensor actually granted or controls.
 
 10. TRANSFER, ACQUISITION AND SUCCESSORS
 
