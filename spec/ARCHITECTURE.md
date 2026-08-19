@@ -57,13 +57,18 @@ At minimum it must identify:
 
 ### 3.3 `PatentGrantBundle`
 
-The release unit that combines the exact operative patent-license text and exact project-specific patent grant:
+The release unit is a closed immutable package whose **legal grant core** is the exact operative patent-license text plus the exact project-specific manifest, and whose immutable validation state also includes every retained evidence member required by the applicable release/security profiles:
 
 ```text
-PatentGrantBundle = exact PatentLicenseRelease + exact PatentGrantManifest
+PatentGrantBundle
+  = exact PatentLicenseRelease
+  + exact PatentGrantManifest
+  + required retained evidence
 ```
 
-The Bundle must content-address both components.
+Retained evidence is part of the Bundle's immutable identity and reproducible release validation; it does not silently become additional licence text or grant terms unless the PatentLicenseRelease or PatentGrantManifest expressly gives a retained artifact that normative effect.
+
+`BUNDLE-INDEX` content-addresses the complete non-index member set, and every operative PatentGrantBundle uses the exact `ECLPLB1` physical serialization defined by `spec/CONTAINER-PROFILE.md`.
 
 An ECL Bundle reference, if any, is an expressly incorporated policy reference inside the PatentGrantManifest. It is never inferred from repository location, current ECL state, a mutable channel or a later Schedule.
 
