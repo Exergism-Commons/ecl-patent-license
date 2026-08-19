@@ -86,11 +86,28 @@ Member identity is the exact validated path byte sequence. Extraction to a files
 
 For an individual bundle, this profile explicitly narrows the JSON-evidence traversal in `spec/SECURITY-PROFILE.md` sections 1.1, 1.2 and 1.4 so that **JSON number tokens are privacy-inspected in addition to member names and string/URI values**.
 
-Before any JSON parser may coerce a number to IEEE-754, arbitrary precision, a language-native integer, scientific notation or another numeric representation, the same lossless raw-token pass used for duplicate-name and surrogate checks MUST expose every exact JSON numeric lexeme. Each lexeme is inspected byte-for-byte as ASCII text under the credential-exclusion rule.
+Before any JSON parser may coerce a number to IEEE-754, arbitrary precision, a language-native integer, scientific notation or another numeric representation, the same lossless raw-token pass used for duplicate-name and surrogate checks MUST expose every exact JSON numeric lexeme and its exact JSON path.
 
-A numeric lexeme is accepted only when its complete spelling is unambiguously a schema-structured public numeric value permitted at that exact JSON path, such as a bounded claim number or another profile-defined non-personal public quantity. A free-form or evidence JSON numeric token that could be a plaintext government identifier, low-entropy credential, deterministic credential derivative, or unexplained identifier-like digit run fails closed. Values such as an unclassified `123456789`, including equivalent exponent/decimal spellings, MUST NOT become acceptable merely because a parser converts them to a number.
+For privacy-reviewed retained JSON evidence, the default rule is **numeric tokens forbidden**. A numeric token is accepted only when the exact immutable member/profile definition explicitly enumerates that JSON path as a public numeric field and supplies all of the following normative data:
 
-Privacy classification uses the **original raw numeric lexeme and JSON path**, not a rounded, normalized or reserialized numeric value. If the tokenizer cannot preserve the exact numeric token before semantic parsing, the individual bundle is non-conforming.
+1. one exact accepted raw-token grammar;
+2. an exact inclusive semantic range;
+3. the public, non-personal meaning of the field; and
+4. a rule that no alternate numeric spelling denotes the same accepted value.
+
+Unless a fixed profile states otherwise for one named path, the only permitted numeric grammar is canonical non-negative decimal integer text:
+
+```text
+0 | [1-9][0-9]*
+```
+
+A permitted path using that default grammar MUST reject `+`, `-`, decimal points, exponent markers (`e`/`E`), leading zeroes on nonzero values, whitespace, or any other spelling. Implementations MUST compare the exact raw token to that grammar before numeric conversion. They MUST NOT expand exponents, strip zeroes, round, parse to floating point, convert to a normalized numeric value, or use numeric equality to decide privacy acceptance.
+
+Accordingly, tokens such as `1.23456789e8`, `123456789e0`, `0123456789`, `123456789.0` and `+123456789` are categorically rejected at every privacy-reviewed evidence path unless a future immutable profile explicitly defines that exact spelling class for that exact path. An unclassified canonical integer such as `123456789` is also rejected because no public numeric field/path authorizes it.
+
+After a token passes the path-specific raw grammar, its exact integer value MUST be range-checked using arbitrary-precision integer arithmetic; overflow, precision loss or inability to perform the exact range check fails closed. The accepted spelling remains the raw token, not a reserialized value.
+
+The `PatentGrantManifest` itself continues to use its schema/profile-defined numeric fields; this section does not silently add new evidence-number fields or broaden manifest acceptance. For retained JSON evidence and registry/snapshot members, an implementation MUST be able to identify the governing immutable profile and exact authorized numeric paths before accepting any numeric token. If no such path rule exists, or if the tokenizer cannot preserve the exact token/path before semantic parsing, the individual bundle is non-conforming.
 
 ## 5. Binding to BUNDLE-INDEX
 
