@@ -179,13 +179,13 @@ Expected workflow:
 3. Validate raw JSON lexical safety before general parsing
 4. Parse and validate syntax/schema using the closed schema resource set
 5. If targeting operativeness, enforce manifest-status, authority-checked and normative semantic-completion gates
-6. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality invariants
-7. Resolve patent-publication identities and authoritative state
-8. Verify every retained evidence member against BUNDLE-INDEX and the applicable evidence closure
-9. Verify the Patent Licensor identity reference and retained identity evidence; for individuals, additionally verify the pinned attestation profile, verifier key and retained attestation
+6. Construct canonical BUNDLE-INDEX from the two fixed members and the complete evidence closure required by the manifest and applicable fixed profiles
+7. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality invariants
+8. Resolve patent-publication identities and authoritative state, verifying retained patent evidence against BUNDLE-INDEX
+9. Verify the Patent Licensor identity reference and retained identity evidence against BUNDLE-INDEX; for individuals, additionally verify the pinned attestation profile, verifier key and retained attestation
 10. Resolve any exact ECL Bundle reference
 11. Complete grant-specific legal/policy review
-12. Construct canonical BUNDLE-INDEX and verify the closed member set
+12. Re-verify the canonical BUNDLE-INDEX, applicable evidence closure and exact closed member set after all semantic resolution
 13. Serialize and validate the exact ECLPLB1 physical container
 14. Compute exact PatentGrantBundle identity and required physical-package hashes
 15. Bind the immutable validation-profile/release inputs
@@ -193,6 +193,8 @@ Expected workflow:
 17. Preserve and verify the approval record
 18. Mark operative only if every gate passes
 ```
+
+Step 6 occurs before any index-dependent hash, evidence or identity check. Step 12 is a verification pass, not permission to mutate the index in place. If patent, identity, ECL, security or legal/policy resolution reveals a required evidence member that was not included at step 6, or shows that an indexed member is outside the applicable closure, the current bundle candidate fails this workflow. Tooling must construct a new canonical `BUNDLE-INDEX` and restart the index-dependent validation steps; it MUST NOT silently append, remove or replace members after those checks have begun.
 
 ### 10.1 Patent publication identity and state
 
