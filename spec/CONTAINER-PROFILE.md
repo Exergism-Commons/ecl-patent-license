@@ -82,11 +82,34 @@ Member identity is the exact validated path byte sequence. Extraction to a files
 4. The outer decoder MUST NOT inspect a payload to infer an alternate outer-container boundary.
 5. Nested/container-like bytes inside a member have no outer-container meaning. Whether such a member format is permitted is decided only by the member rules in `SECURITY-PROFILE.md`.
 
-### 4.1 Raw JSON numeric-lexeme privacy rule for individuals
+### 4.1 Raw JSON numeric-lexeme rule for individual manifests and evidence
 
-For an individual bundle, this profile explicitly narrows the JSON-evidence traversal in `spec/SECURITY-PROFILE.md` sections 1.1, 1.2 and 1.4 so that **JSON number tokens are privacy-inspected in addition to member names and string/URI values**.
+For an individual bundle, this profile explicitly narrows the JSON traversal in `spec/SECURITY-PROFILE.md` sections 1.1, 1.2 and 1.4 so that **every JSON number token in the PatentGrantManifest and every retained JSON member is inspected from its exact raw lexeme before semantic parsing**. Number tokens are therefore part of the whole-manifest privacy gate even though section 1.1 also performs a decoded-value traversal after schema validation.
 
-Before any JSON parser may coerce a number to IEEE-754, arbitrary precision, a language-native integer, scientific notation or another numeric representation, the same lossless raw-token pass used for duplicate-name and surrogate checks MUST expose every exact JSON numeric lexeme and its exact JSON path.
+Before any JSON parser may coerce a number to IEEE-754, arbitrary precision, a language-native integer, scientific notation or another numeric representation, the same lossless raw-token pass used for duplicate-name and surrogate checks MUST expose every exact JSON numeric lexeme and its exact JSON path. A validator that parses or rounds the number first and then applies schema/privacy checks is non-conforming.
+
+#### 4.1.1 PatentGrantManifest numeric fields
+
+For the exact closed schema-set v2 bound by `schemas/schema-set.json`, the only JSON-number fields in a `PatentGrantManifest` are:
+
+```text
+/ecl_bundle_reference/patent_specific_effect/trigger/policy_item/start_line
+/ecl_bundle_reference/patent_specific_effect/trigger/policy_item/line_count
+```
+
+At either path, the exact raw token MUST match:
+
+```text
+[1-9][0-9]*
+```
+
+before any conversion. `start_line` MUST then be range-checked exactly as an arbitrary-precision integer in `1..1000000`; `line_count` MUST be range-checked exactly in `1..100000`.
+
+Any other JSON number token anywhere in a schema-set-v2 manifest fails closed because no other manifest path is authorized to carry a JSON number. At the two authorized paths, `+`, `-`, decimal points, exponent markers (`e`/`E`), leading zeroes, whitespace inside the token or any other spelling fails before schema validation. Thus values such as `1.0`, `1e0`, `1.0000000000000000123456789` and `01` cannot be rounded or coerced into the integer `1` by a permissive parser.
+
+The raw-token gate is an additional precondition to JSON Schema validation; it does not replace the schema. After the lexeme and exact-range checks pass, the normal closed schema-set validation MUST still accept the parsed manifest. If a future schema-set version adds, removes or changes a numeric field, that new immutable schema-set/profile MUST publish its own exact numeric-path table, raw grammar and range semantics; validators MUST NOT infer new numeric paths from implementation-local schema coercion.
+
+#### 4.1.2 Retained JSON evidence and registry/snapshot members
 
 For privacy-reviewed retained JSON evidence, the default rule is **numeric tokens forbidden**. A numeric token is accepted only when the exact immutable member/profile definition explicitly enumerates that JSON path as a public numeric field and supplies all of the following normative data:
 
@@ -107,7 +130,7 @@ Accordingly, tokens such as `1.23456789e8`, `123456789e0`, `0123456789`, `123456
 
 After a token passes the path-specific raw grammar, its exact integer value MUST be range-checked using arbitrary-precision integer arithmetic; overflow, precision loss or inability to perform the exact range check fails closed. The accepted spelling remains the raw token, not a reserialized value.
 
-The `PatentGrantManifest` itself continues to use its schema/profile-defined numeric fields; this section does not silently add new evidence-number fields or broaden manifest acceptance. For retained JSON evidence and registry/snapshot members, an implementation MUST be able to identify the governing immutable profile and exact authorized numeric paths before accepting any numeric token. If no such path rule exists, or if the tokenizer cannot preserve the exact token/path before semantic parsing, the individual bundle is non-conforming.
+For retained JSON evidence and registry/snapshot members, an implementation MUST be able to identify the governing immutable profile and exact authorized numeric paths before accepting any numeric token. If no such path rule exists, or if the tokenizer cannot preserve the exact token/path before semantic parsing, the individual bundle is non-conforming.
 
 ## 5. Binding to BUNDLE-INDEX
 
