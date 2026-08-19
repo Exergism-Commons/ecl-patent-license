@@ -25,7 +25,9 @@ A future operative patent grant will require, at minimum:
 4. represented authority and auditable provenance;
 5. immutable component identities/hashes;
 6. any required grant-specific legal review; and
-7. an exact `PatentGrantBundle` binding the legal text and grant manifest.
+7. an exact `PatentGrantBundle` binding the legal text, grant manifest and all required retained evidence through its canonical `BUNDLE-INDEX` and operative `ECLPLB1` serialization.
+
+The legal grant core remains the exact PatentLicenseRelease plus the exact PatentGrantManifest. Retained evidence participates in bundle identity and reproducible release validation; it does not silently become additional licence text.
 
 The legal effect of any such artifact will depend on the operative licence and applicable law, not on repository metadata alone.
 
