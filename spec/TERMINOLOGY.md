@@ -30,13 +30,18 @@ It records the identity, authority representation, Covered Implementation, claim
 
 ## PatentGrantBundle
 
-The exact pair:
+A closed immutable release package whose legal grant core is one exact `PatentLicenseRelease` plus one exact `PatentGrantManifest`, and whose bundle identity also covers every retained evidence member required by the applicable release/security profiles:
 
 ```text
-PatentGrantBundle = PatentLicenseRelease + PatentGrantManifest
+PatentGrantBundle
+  = PatentLicenseRelease
+  + PatentGrantManifest
+  + required retained evidence
 ```
 
-Both components must be immutable and content-addressed.
+The retained evidence supports reproducible validation and provenance; it does not silently become additional licence text or grant terms unless the PatentLicenseRelease or PatentGrantManifest expressly gives a retained artifact normative effect.
+
+`BUNDLE-INDEX` content-addresses the complete non-index member set. Every operative PatentGrantBundle is physically serialized as `ECLPLB1` under `spec/CONTAINER-PROFILE.md`.
 
 ## Covered Implementation
 
