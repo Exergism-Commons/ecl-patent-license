@@ -29,7 +29,7 @@ Schema validity, a Git commit, a merge to a default branch, a release tag, maint
 
 1. DEFINITIONS
 
-1.1 "Affiliate" means an entity that directly or indirectly controls, is controlled by, or is under common control with another entity. "Control" means the present power to direct the management of the entity, whether through ownership of more than fifty percent of voting interests, contractual power, or another legally effective means. Affiliate status is tested at the time the relevant permission is exercised and does not by itself make an Affiliate a Patent Licensee unless the PatentGrantManifest so provides.
+1.1 "Affiliate" means an entity that directly or indirectly controls, is controlled by, or is under common control with another entity. "Control" means the present power to direct the management of the entity, whether through ownership of more than fifty percent of voting interests, contractual power, or another legally effective means. Affiliate status does not itself expand or reduce the public direct grant in this version.
 
 1.2 "Covered Act" means an act that, in the jurisdiction where the act occurs, would require authorization from the Patent Licensor under a Covered Patent Claim but for this License or another independent legal basis. Covered Acts are determined under applicable patent law. Words used in software, hardware or distribution practice do not create additional patent-exclusive acts.
 
@@ -43,13 +43,13 @@ Schema validity, a Git commit, a merge to a default branch, a release tag, maint
 
 1.7 "PatentGrantManifest" means the exact immutable manifest contained in the PatentGrantBundle.
 
-1.8 "Patent Licensee" or "You" means a person or legal entity that is within the recipient class permitted by the PatentGrantManifest and that exercises or proposes to exercise a Covered Act in reliance on the patent permission granted by the Patent Licensor through the operative PatentGrantBundle. An Affiliate is not automatically included in You.
+1.8 "Patent Licensee" or "You" means any person or legal entity that satisfies every applicable initial-grant eligibility or condition in the exact operative PatentGrantBundle and exercises or proposes to exercise a Covered Act in reliance on the direct patent permission granted by the Patent Licensor. Status as a distributor, customer, Affiliate, contractor, manufacturer, integrator, reseller or other intermediary neither creates nor removes Patent Licensee status by itself.
 
 1.9 "Patent Licensor" means the person or legal entity identified as patent_licensor in the PatentGrantManifest and only to the extent that person or entity owns, controls or is otherwise authorized to grant the relevant Covered Patent Claim.
 
 1.10 "PatentLicenseRelease" means the exact immutable legal-text artifact identified by the PatentGrantManifest and retained as license/PATENT-LICENSE in the PatentGrantBundle.
 
-1.11 "Sublicense" means a patent permission granted by a Patent Licensee under express sublicensing authority received from the Patent Licensor. Permission to distribute, transfer, host, modify or provide technology does not by itself imply sublicensing authority.
+1.11 "Sublicense" means a patent permission purportedly granted by a Patent Licensee under authority from the Patent Licensor. Version 1.0.0-draft.1 grants no Sublicense authority because downstream recipients are intended to qualify, when eligible, directly from the Patent Licensor.
 
 2. EFFECTIVE TIME, DURATION AND AUTHORITY
 
@@ -75,9 +75,11 @@ Version 1.0.0-draft.1 does not assign legal semantics to the schema's free-form 
 
 3. EXPRESS PATENT GRANT
 
-3.1 Grant.
+3.1 Public direct grant.
 
-Subject to all applicable terms of this License and the exact PatentGrantManifest, the Patent Licensor grants You a non-exclusive, royalty-free patent permission under the Covered Patent Claims to perform Covered Acts with respect to the Covered Implementation.
+Subject to all applicable terms of this License and the exact PatentGrantManifest, the Patent Licensor grants each person or legal entity that satisfies every applicable initial-grant eligibility or condition a non-exclusive, royalty-free, direct patent permission under the Covered Patent Claims to perform Covered Acts with respect to the Covered Implementation.
+
+The permission runs directly from the Patent Licensor to each qualifying Patent Licensee. It does not depend on a distributor, upstream licensee, customer relationship, Affiliate relationship, transfer of a copy, or Sublicense chain.
 
 3.2 Territorial meaning.
 
@@ -87,9 +89,9 @@ The grant applies in each jurisdiction in which a Covered Patent Claim has legal
 
 Depending on applicable patent law and the claim involved, Covered Acts may include making, using, practicing a patented process, offering for sale, selling, importing, supplying relevant components, or another act reserved to the patent right. The factual acts of running software, deploying a service, distributing a file, publishing source code, exporting data or operating a system are Covered Acts only to the extent applicable patent law makes the particular act require authorization under a Covered Patent Claim.
 
-3.4 No automatic have-made or sublicensing right.
+3.4 No authority to grant broader rights.
 
-Section 3.1 does not by itself grant a have-made right, Sublicense authority, Affiliate rights, contract-manufacturer rights, customer rights, or other downstream rights. Those matters are controlled exclusively by Section 6 and downstream_policy in the PatentGrantManifest.
+You may pass along the Covered Implementation and information about this PatentGrantBundle, but You do not thereby become the source of another person's ECL-PL patent grant. A downstream person must independently satisfy the applicable initial-grant eligibility or condition and receives any ECL-PL permission directly from the Patent Licensor.
 
 4. COVERED PATENT CLAIM SCOPE
 
@@ -145,61 +147,34 @@ Nothing in this License recreates patent control over an article, product or tra
 
 Exercising or relying on this License is not, by itself, an admission that a Covered Patent Claim is valid, enforceable, infringed, essential, or necessary to practice the Covered Implementation.
 
-6. DOWNSTREAM RIGHTS
+6. DOWNSTREAM MODEL FOR VERSION 1.0.0-DRAFT.1
 
-6.1 Unsupported conditional values.
+6.1 Public direct model only.
 
-Version 1.0.0-draft.1 does not support a downstream_policy value of conditional because the current manifest schema does not provide a generic machine-resolvable object containing the condition for those fields. A PatentGrantBundle selecting conditional for sublicensing, have_made, affiliates, contract_manufacturers or customers is not eligible to become operative under this PatentLicenseRelease.
+Version 1.0.0-draft.1 implements the architecture's direct-grant hypothesis as a public direct grant. To be eligible for operativeness under this PatentLicenseRelease, downstream_policy MUST contain:
 
-6.2 Direct-grant model.
+model: direct-grant
+sublicensing: not-granted
 
-If downstream_policy.model is direct-grant, a person or entity that falls within an expressly permitted downstream class receives any patent permission directly from the Patent Licensor under the operative PatentGrantBundle. A distributor, integrator or other intermediary does not become the legal source of that direct grant.
+The optional downstream_policy fields have_made, affiliates, contract_manufacturers and customers MUST be absent. A manifest selecting sublicense-chain, hybrid, conditional, expressly-granted sublicensing, or any of those optional downstream classifications is not compatible with Version 1.0.0-draft.1 and cannot become operative under this PatentLicenseRelease.
 
-For Version 1.0.0-draft.1, direct-grant requires downstream_policy.sublicensing to be not-granted. A direct-grant manifest that also selects expressly-granted sublicensing is internally inconsistent with this PatentLicenseRelease and cannot become operative.
+6.2 Why status labels do not control the direct grant.
 
-6.3 Sublicense-chain model.
+A person does not obtain or lose the public direct grant merely because that person is described as a customer, Affiliate, contractor, manufacturer, reseller, integrator, distributor or other intermediary. Each person or entity qualifies independently under Section 3.1 and any exact initial-grant patent policy in the PatentGrantManifest.
 
-If downstream_policy.model is sublicense-chain, downstream rights that depend on a Sublicense exist only if downstream_policy.sublicensing is expressly-granted and the Sublicense remains within the scope of the Patent Licensee's own permission. A Sublicense may not enlarge the Covered Patent Claim set, Covered Implementation, Covered Acts, duration, territory or Patent Licensor authority.
+6.3 No Sublicense authority.
 
-A sublicense-chain selection combined with sublicensing: not-granted is incompatible with this PatentLicenseRelease and cannot become operative.
+You receive no authority under Version 1.0.0-draft.1 to grant an ECL-PL Sublicense. A downstream recipient who qualifies receives its permission directly from the Patent Licensor; a downstream recipient who does not qualify cannot be made eligible by an intermediary's purported Sublicense.
 
-6.4 Hybrid model not supported in draft.1.
+6.4 No special have-made bypass.
 
-The current schema's hybrid downstream model does not itself assign each downstream class to a direct-grant or Sublicense path. Version 1.0.0-draft.1 therefore does not support downstream_policy.model: hybrid. A future release may support hybrid only after the manifest model contains an exact, non-ambiguous path assignment.
+Version 1.0.0-draft.1 creates no separate have-made authorization that permits You to cause an otherwise ineligible third party to perform Covered Acts. A contractor or manufacturer may perform Covered Acts under ECL-PL only if that party independently qualifies for the public direct grant, or if another Independent Patent Permission authorizes the acts.
 
-6.5 Sublicensing flag.
+This rule is intended to prevent a direct-grant eligibility restriction from being defeated merely by relabeling an ineligible actor as a contractor or manufacturer.
 
-If sublicensing is not-granted, You receive no authority from this License to grant a Sublicense.
+6.5 Future downstream models.
 
-If sublicensing is expressly-granted under a supported sublicense-chain model, You may grant a Sublicense only within the scope You received, subject to the same applicable claim, implementation, territorial, exhaustion, mandatory-law and termination limits. You may not state or imply that You own the Covered Patent Claims merely because You have sublicensing authority.
-
-6.6 Have-made right.
-
-If downstream_policy.have_made is included, You may engage a third party to perform manufacturing or other covered production acts for Your account to the extent those acts are Covered Acts and remain within the Covered Implementation. That permission does not give the third party an independent right to manufacture for unrelated customers, sell outside the authorized chain, or practice the Covered Patent Claims for its own separate purposes.
-
-If have_made is excluded or absent, no have-made right is implied.
-
-6.7 Contract manufacturers.
-
-If downstream_policy.contract_manufacturers is included, a contract manufacturer receives only the permission necessary to perform the authorized contracted acts for a Patent Licensee and only while acting within that relationship. This selection is incompatible with have_made: excluded under this PatentLicenseRelease.
-
-If contract_manufacturers is excluded or absent, no direct or derivative contract-manufacturer permission is created by this License, without prejudice to Independent Patent Permissions.
-
-6.8 Affiliates.
-
-If downstream_policy.affiliates is included, an Affiliate is treated as included with the Patent Licensee only while the required control relationship exists and only within the same grant scope. Loss of Affiliate status ends that Affiliate inclusion prospectively, but does not reverse exhaustion or terminate Independent Patent Permissions.
-
-If affiliates is excluded or absent, Affiliates receive no permission merely from affiliation.
-
-If affiliates is separate-direct-grants, each Affiliate requires its own attributable direct patent-grant basis and is not included automatically under this PatentGrantBundle.
-
-6.9 Customers.
-
-If downstream_policy.customers is direct-grant, a customer that lawfully receives or uses the Covered Implementation within the authorized chain receives a direct patent permission from the Patent Licensor for the Covered Acts assigned to that customer class by the grant.
-
-If customers is derivative-right, this License does not create a separate direct customer grant. A customer's rights must instead arise through a valid Sublicense where authorized, exhaustion, another Independent Patent Permission, or another legally effective downstream basis.
-
-If customers is no-express-grant or absent, no customer patent grant is created by this License, without prejudice to exhaustion and Independent Patent Permissions.
+A future PatentLicenseRelease may support identified recipients, have-made rights, sublicense chains, customer-specific permissions or hybrid pathways, but only after the manifest model supplies the exact information required to distinguish those legal paths without relying on mutable distribution history or implied recipient identity.
 
 7. INDEPENDENT AND OVERLAPPING RIGHTS
 
@@ -235,7 +210,11 @@ Where a normative ECL reference is present, only the exact consequence selected 
 
 A suspension or limitation whose commencement, scope or end condition cannot be determined objectively from the exact immutable policy item and patent_specific_effect is not eligible for operativeness under this PatentLicenseRelease.
 
-8.5 Mandatory-law and prior-commitment limit.
+8.5 Public direct grant and initial eligibility.
+
+Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1. An intermediary cannot cure that ineligibility by transferring the Covered Implementation or purporting to sublicense ECL-PL rights.
+
+8.6 Mandatory-law and prior-commitment limit.
 
 An ECL-referenced patent restriction operates only to the extent permitted by applicable patent law, competition law, exhaustion doctrine, non-waivable law and any prior standards, FRAND/RAND, patent-pool, covenant or other commitment binding the Patent Licensor. This License does not authorize discrimination or field-of-use restrictions that the Patent Licensor is legally prohibited from imposing.
 
@@ -259,7 +238,7 @@ If defensive_termination.profile is custom, termination applies only to the exac
 
 9.4 Scope of termination.
 
-Defensive termination under this Section affects only the patent permission granted to the triggering Patent Licensee by the identified Patent Licensor under the exact PatentGrantBundle and only to the scope expressly selected by the applicable profile. It does not terminate another licensor's grant, another independent licence, statutory permission, exhaustion, or rights already beyond the Patent Licensor's control.
+Defensive termination under this Section affects only the direct patent permission granted to the triggering Patent Licensee by the identified Patent Licensor under the exact PatentGrantBundle and only to the scope expressly selected by the applicable profile. It does not terminate another licensor's grant, another independent licence, statutory permission, exhaustion, or rights already beyond the Patent Licensor's control.
 
 9.5 Cure and withdrawal.
 
@@ -269,9 +248,9 @@ If cure_or_withdrawal is unavailable or absent, this License creates no contract
 
 A cure_or_withdrawal value of conditional is not supported by Version 1.0.0-draft.1 because the manifest does not contain an exact generic condition object for that value.
 
-9.6 Downstream survival.
+9.6 Other recipients are evaluated independently.
 
-Termination of a Patent Licensee does not automatically terminate a direct grant that the Patent Licensor independently made to another recipient. A valid Sublicense granted before termination survives only to the extent the PatentGrantManifest and applicable law support that survival; no survival rule may recreate rights that were never granted. Exhaustion and Independent Patent Permissions are unaffected by this Section.
+Termination of one Patent Licensee does not automatically terminate the direct grant of another independently qualifying Patent Licensee. There is no sublicense chain in Version 1.0.0-draft.1 to collapse when one recipient terminates. Exhaustion and Independent Patent Permissions remain unaffected.
 
 10. TRANSFER, ACQUISITION AND SUCCESSORS
 
@@ -283,9 +262,9 @@ Assignment, acquisition, exclusive licensing or other transfer of a patent after
 
 To the extent enforceable as a contractual obligation, the Patent Licensor must not knowingly structure a later transfer for the principal purpose of defeating patent permissions already granted under an operative PatentGrantBundle. This clause does not represent that every successor is automatically bound in every jurisdiction.
 
-10.3 Licensee acquisitions and divestitures.
+10.3 Licensee acquisitions and Affiliates.
 
-A change of control of a Patent Licensee does not automatically enlarge the Covered Implementation, Covered Patent Claim set or downstream classes. Affiliate treatment remains governed by Section 6.8 and the exact PatentGrantManifest.
+A change of control of a Patent Licensee does not automatically enlarge the Covered Implementation or Covered Patent Claim set. Because this release uses a public direct grant, each related entity must independently satisfy the applicable grant conditions; Affiliate status alone is not a source of permission.
 
 10.4 Acquired portfolios.
 
@@ -363,7 +342,7 @@ Termination affects only the rights and parties within the exact termination rul
 
 15.3 Previously authorized articles and inventory.
 
-The treatment of post-termination inventory, repair, resale, use and downstream articles remains subject to applicable exhaustion law, the scope of any surviving direct grant or Sublicense, and other Independent Patent Permissions. This License does not impose a fictional continuing patent right where applicable law has exhausted it.
+The treatment of post-termination inventory, repair, resale, use and downstream articles remains subject to applicable exhaustion law, any independently surviving direct grant, and other Independent Patent Permissions. This License does not impose a fictional continuing patent right where applicable law has exhausted it.
 
 15.4 Clauses that continue by nature.
 
@@ -377,7 +356,7 @@ The Patent Licensor's authenticated approval or adoption of the exact PatentGran
 
 16.2 Licensee reliance.
 
-A person may rely on the patent permission only to the extent that person is within the recipient class and grant conditions of the exact operative PatentGrantBundle. Whether additional contractual obligations require separate acceptance is determined by applicable law; absence of contract formation does not expand the scope of the patent permission stated by the Patent Licensor.
+A person may rely on the patent permission only to the extent that person independently satisfies the exact operative PatentGrantBundle's initial-grant conditions. Whether additional contractual obligations require separate acceptance is determined by applicable law; absence of contract formation does not expand the scope of the direct patent permission stated by the Patent Licensor.
 
 16.3 No adverse inference from non-use.
 
