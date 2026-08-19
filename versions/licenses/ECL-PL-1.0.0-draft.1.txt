@@ -55,7 +55,7 @@ Schema validity, a Git commit, a merge to a default branch, a release tag, maint
 
 2.1 Effective time.
 
-A grant under this License takes effect no earlier than the later of (a) the effective_date stated in the PatentGrantManifest and (b) completion of the attributable Patent Licensor approval or adoption act required for the exact PatentGrantBundle to become operative. This draft does not authorize a manifest to create retroactive patent permission for acts occurring before that time.
+For this PatentLicenseRelease, the calendar value in PatentGrantManifest.effective_date denotes 00:00:00 UTC at the start of that date. A grant under this License takes effect no earlier than the later of that instant and completion of the attributable Patent Licensor approval or adoption act required for the exact PatentGrantBundle to become operative. This draft does not authorize retroactive patent permission for acts occurring before that later instant.
 
 2.2 Claim duration.
 
@@ -68,6 +68,10 @@ No grant extends beyond the Patent Licensor's actual authority. The PatentGrantM
 2.4 No implied later authority.
 
 If the Patent Licensor later acquires ownership, control or licensing authority over a claim, that later event does not retroactively validate a grant for periods in which the Patent Licensor lacked authority. Treatment of later-acquired claims is governed by Section 4.5.
+
+2.5 Unsupported expiration_policy field.
+
+Version 1.0.0-draft.1 does not assign legal semantics to the schema's free-form expiration_policy field. A PatentGrantBundle containing expiration_policy is not eligible to become operative under this PatentLicenseRelease. A future release may support that field only after defining a closed, objectively reviewable model.
 
 3. EXPRESS PATENT GRANT
 
@@ -85,7 +89,7 @@ Depending on applicable patent law and the claim involved, Covered Acts may incl
 
 3.4 No automatic have-made or sublicensing right.
 
-Section 3.1 does not by itself grant a have-made right, Sublicense authority, Affiliate rights, contract-manufacturer rights, customer rights, or other downstream rights. Those matters are controlled exclusively by Section 6 and the downstream_policy in the PatentGrantManifest.
+Section 3.1 does not by itself grant a have-made right, Sublicense authority, Affiliate rights, contract-manufacturer rights, customer rights, or other downstream rights. Those matters are controlled exclusively by Section 6 and downstream_policy in the PatentGrantManifest.
 
 4. COVERED PATENT CLAIM SCOPE
 
@@ -143,13 +147,15 @@ Exercising or relying on this License is not, by itself, an admission that a Cov
 
 6. DOWNSTREAM RIGHTS
 
-6.1 Release-level fail-closed rule for conditional values.
+6.1 Unsupported conditional values.
 
-Version 1.0.0-draft.1 does not support a downstream_policy value of conditional unless a future reviewed PatentLicenseRelease defines and binds an exact machine-resolvable condition object for that field. Because the current manifest schema does not itself provide such a generic condition object, a PatentGrantBundle selecting conditional for sublicensing, have_made, affiliates, contract_manufacturers or customers is not eligible to become operative under this PatentLicenseRelease.
+Version 1.0.0-draft.1 does not support a downstream_policy value of conditional because the current manifest schema does not provide a generic machine-resolvable object containing the condition for those fields. A PatentGrantBundle selecting conditional for sublicensing, have_made, affiliates, contract_manufacturers or customers is not eligible to become operative under this PatentLicenseRelease.
 
 6.2 Direct-grant model.
 
 If downstream_policy.model is direct-grant, a person or entity that falls within an expressly permitted downstream class receives any patent permission directly from the Patent Licensor under the operative PatentGrantBundle. A distributor, integrator or other intermediary does not become the legal source of that direct grant.
+
+For Version 1.0.0-draft.1, direct-grant requires downstream_policy.sublicensing to be not-granted. A direct-grant manifest that also selects expressly-granted sublicensing is internally inconsistent with this PatentLicenseRelease and cannot become operative.
 
 6.3 Sublicense-chain model.
 
@@ -157,15 +163,15 @@ If downstream_policy.model is sublicense-chain, downstream rights that depend on
 
 A sublicense-chain selection combined with sublicensing: not-granted is incompatible with this PatentLicenseRelease and cannot become operative.
 
-6.4 Hybrid model.
+6.4 Hybrid model not supported in draft.1.
 
-If downstream_policy.model is hybrid, each downstream class must receive rights only through the direct-grant or Sublicense path expressly assigned to it by the PatentGrantManifest and this License. Ambiguity over the source of a downstream permission is resolved against creation of additional patent rights.
+The current schema's hybrid downstream model does not itself assign each downstream class to a direct-grant or Sublicense path. Version 1.0.0-draft.1 therefore does not support downstream_policy.model: hybrid. A future release may support hybrid only after the manifest model contains an exact, non-ambiguous path assignment.
 
 6.5 Sublicensing flag.
 
 If sublicensing is not-granted, You receive no authority from this License to grant a Sublicense.
 
-If sublicensing is expressly-granted, You may grant a Sublicense only within the scope You received, subject to the same applicable claim, implementation, territorial, exhaustion, mandatory-law and termination limits. You may not state or imply that You own the Covered Patent Claims merely because You have sublicensing authority.
+If sublicensing is expressly-granted under a supported sublicense-chain model, You may grant a Sublicense only within the scope You received, subject to the same applicable claim, implementation, territorial, exhaustion, mandatory-law and termination limits. You may not state or imply that You own the Covered Patent Claims merely because You have sublicensing authority.
 
 6.6 Have-made right.
 
@@ -221,11 +227,13 @@ If ecl_bundle_reference.purpose is provenance-only, the reference has no effect 
 
 8.3 Exact immutable policy only.
 
-A normative ECL reference applies only to the exact referenced ECL Bundle and exact policy item identified by the PatentGrantManifest. A later ECL release, later Schedule, mutable channel, branch, registry view or changed classification cannot alter an existing PatentGrantBundle.
+A normative ECL reference applies only to the exact referenced ECL Bundle and exact policy item identified by the PatentGrantManifest. A later ECL release, later Schedule, mutable channel, branch, registry view or changed policy text cannot alter an existing PatentGrantBundle.
 
 8.4 Patent-specific consequence.
 
 Where a normative ECL reference is present, only the exact consequence selected in patent_specific_effect may operate: withholding or conditioning an initial grant, or terminating, suspending or limiting specified existing rights. The trigger and affected_rights fields must be applied narrowly to their exact identified scope. No broader copyright consequence, ECL remedy or repository state is imported by implication.
+
+A suspension or limitation whose commencement, scope or end condition cannot be determined objectively from the exact immutable policy item and patent_specific_effect is not eligible for operativeness under this PatentLicenseRelease.
 
 8.5 Mandatory-law and prior-commitment limit.
 
@@ -243,6 +251,8 @@ If defensive_termination.profile is narrow-covered-implementation, Your ECL-PL p
 
 For this profile, merely giving technical notice, requesting licensing discussions, defending an action, asserting a compulsory counterclaim or cross-claim, responding to a proceeding initiated by another party, seeking a declaration of non-infringement in response to a concrete threat, challenging validity or enforceability, participating in an administrative validity proceeding, or enforcing this License does not by itself trigger termination.
 
+For Version 1.0.0-draft.1, a narrow-covered-implementation manifest MUST NOT additionally supply description, trigger, defensive_counterclaims_excluded, cross_claims_excluded or declaratory_actions_excluded. Those fields belong to the custom profile. The narrow profile may supply cure_or_withdrawal only as available or unavailable. A contradictory narrow-profile manifest cannot become operative.
+
 9.3 Custom profile.
 
 If defensive_termination.profile is custom, termination applies only to the exact trigger event, conduct, target scope, exclusions and cure treatment stated by the PatentGrantManifest. Free-form references to unspecified external terms do not expand the trigger.
@@ -257,7 +267,7 @@ If defensive_termination.cure_or_withdrawal is available, the triggering Patent 
 
 If cure_or_withdrawal is unavailable or absent, this License creates no contractual cure right.
 
-A cure_or_withdrawal value of conditional is not supported by Version 1.0.0-draft.1 for the reason stated in Section 6.1.
+A cure_or_withdrawal value of conditional is not supported by Version 1.0.0-draft.1 because the manifest does not contain an exact generic condition object for that value.
 
 9.6 Downstream survival.
 
