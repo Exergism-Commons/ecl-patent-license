@@ -38,7 +38,8 @@ Drafting exposed a real semantic gap in the architecture: the manifest has downs
 - every person or legal entity is evaluated independently against the exact initial-grant conditions of the operative PatentGrantBundle;
 - if the person qualifies, the patent permission runs **directly from the Patent Licensor** to that person;
 - if the person does not qualify, an intermediary cannot make that person eligible by distribution, status label, contract-manufacturer designation or purported sublicense;
-- where ECL-derived eligibility is used, a contractor/manufacturer must also qualify for the exact acts/project under the frozen ECL relationship/project/anti-circumvention rule rather than merely being a different legal entity; and
+- where ECL-derived eligibility is used, a contractor/manufacturer must also qualify for the exact acts/project under the frozen ECL relationship/project/anti-circumvention rule rather than merely being a different legal entity;
+- ECL-derived initial ineligibility must also resolve ECL-PL-authorized sales/dispositions that could create exhaustion in favor of a triggered recipient or project when the policy is intended to block that route; and
 - there is no ECL-PL sublicense chain in `draft.1`.
 
 This means that the words `customer`, `Affiliate`, `contract manufacturer`, `reseller`, `integrator` or similar factual roles are not themselves sources of patent permission. They may matter under applicable law, an exact ECL-derived project/association rule, or another Independent Patent Permission, but not as hidden recipient-identity channels under this release.
@@ -69,7 +70,7 @@ Official text: https://www.mozilla.org/MPL/2.0/
 
 MPL 2.0 is a useful narrow-retaliation comparator because its patent-litigation rule distinguishes initiated litigation from declaratory actions, counterclaims and cross-claims.
 
-`draft.1` uses an even more bounded fixed `narrow-covered-implementation` profile: the trigger is an affirmative judicial or administrative infringement proceeding directed at the exact Covered Implementation, including a tightly bounded assertion initiated through a proxy the Patent Licensee directs, controls or knowingly causes. Defensive responses, validity challenges and enforcement of ECL-PL itself are excluded from that fixed trigger.
+`draft.1` uses an even more bounded fixed `narrow-covered-implementation` profile: the trigger is an affirmative judicial or administrative infringement proceeding directed at the exact Covered Implementation, including a tightly bounded assertion initiated or maintained through a proxy the Patent Licensee directs, controls or knowingly causes. Defensive responses, validity challenges and enforcement of ECL-PL itself are excluded from that fixed trigger.
 
 ### 4.4 CERN Open Hardware Licence v2
 
@@ -107,11 +108,11 @@ The current schema exposes `expiration_policy` as unconstrained text. Treating i
 
 A bundle containing that field is therefore ineligible for operativeness under `draft.1`.
 
-### D4 — Necessary infringement is immutable with respect to recipient-side permissions
+### D4 — Necessary infringement is immutable with respect to recipient-side permissions and defenses
 
-The rule is not “anything that could infringe,” and it also is not “whatever this particular recipient still needs a licence for today.” A claim enters through `necessarily-infringed` only when the exact manifest-defined implementation falls within that claim's exclusionary scope under the relevant patent law, subject to statutory exceptions/limitations that mean Patent Licensor authorization is not legally required.
+The rule is not “anything that could infringe,” and it also is not “whatever this particular recipient still needs a licence for today.” A claim enters through `necessarily-infringed` only when the exact manifest-defined implementation necessarily satisfies the claim limitations and falls within that claim's substantive exclusionary scope under the relevant patent law.
 
-A recipient's separate commercial licence, covenant, Apache/GPL/MPL grant or other Independent Patent Permission is a parallel authorization basis. It does not remove a claim from the ECL-PL claim set while that permission exists or cause the claim to appear later when the independent permission expires.
+Recipient-specific licences, covenants, statutory exceptions or limitations, exhaustion, compulsory licences, government-use authorizations, immunities, defenses and other Independent Patent Permissions are applied when deciding whether a particular act actually requires authorization. They do **not** add or remove Covered Patent Claims. This prevents a research exception, time-limited commercial licence or other mutable recipient circumstance from changing the bundle's claim set.
 
 Optional modifications, unrelated additions, external combinations and later versions do not expand the scope unless the exact combination model permits it.
 
@@ -124,6 +125,8 @@ Even when the manifest selects `included-if-rule-satisfied`, a later acquisition
 Because the manifest does not name an initial Patent Licensee, `draft.1` does not attempt to infer one from distribution history, a repository account, a customer relationship or another mutable fact.
 
 Every qualifying person receives its grant directly from the Patent Licensor. This also makes termination recipient-specific: termination of A does not collapse B's independently qualifying direct grant.
+
+A person already maintaining a proceeding that would satisfy the fixed narrow defensive trigger does not acquire the direct grant while that proceeding remains pending. Otherwise a claimant could file before adoption of the bundle, wait for the public grant to become available, and continue the same offensive case without any new triggering act.
 
 ### D7 — Sublicensing is not supported in v1 draft.1
 
@@ -138,13 +141,15 @@ A `sublicense-chain`, `hybrid`, `conditional` or `expressly-granted` sublicensin
 
 A future release may support sublicensing only after the manifest identifies the upstream recipient and exact downstream authority well enough to avoid implied recipient identity.
 
-### D8 — Optional downstream role fields are absent; outsourcing is still tested
+### D8 — Optional downstream role fields are absent; outsourcing and disposition routes are still tested
 
 `have_made`, `affiliates`, `contract_manufacturers` and `customers` MUST be absent for a `draft.1` operative candidate.
 
 Under a public direct grant, allowing those labels to create separate permission paths would either be redundant or create an eligibility bypass. An otherwise ineligible actor must not become authorized merely because an eligible party calls another entity its contract manufacturer.
 
-A contractor/manufacturer may rely on ECL-PL only if it independently qualifies **for the actual Covered Acts and project**. Where the bundle uses exact ECL-derived initial eligibility, that evaluation includes the incorporated ECL rule's applicable Covered Associate, Restricted Project, direction/material-benefit and anti-circumvention semantics. If the exact rule cannot objectively resolve outsourced acts for an ineligible Restricted Party, `draft.1` fails the candidate closed instead of assuming the contractor route is permitted.
+A contractor/manufacturer may rely on ECL-PL only if it independently qualifies **for the actual Covered Acts and project**. Where the bundle uses exact ECL-derived initial eligibility, that evaluation includes the incorporated ECL rule's applicable Covered Associate, Restricted Project, direction/material-benefit and anti-circumvention semantics.
+
+The same fail-closed discipline applies to sales or other ECL-PL-authorized dispositions capable of producing exhaustion in favor of a triggered recipient or project. If an ECL-derived policy is intended to withhold that recipient/project's patent permission but cannot objectively resolve whether an eligible seller's disposition is inside or outside the ECL-PL grant, the candidate fails closed instead of allowing silence to create an authorized-sale bypass. Independent authorization under another legal basis remains independent and may still produce exhaustion under applicable law.
 
 ### D9 — Future have-made / customer / affiliate models require explicit architecture
 
@@ -158,11 +163,13 @@ A later release can add special have-made, affiliate, customer or contract-manuf
 
 That distinction must be machine-resolvable, not inferred from prose.
 
-### D10 — Fixed narrow defensive termination includes tightly bounded proxy assertions
+### D10 — Fixed narrow defensive termination includes pending and tightly bounded proxy assertions
 
-The fixed profile covers an affirmative patent-infringement proceeding directed at the exact Covered Implementation when the Patent Licensee directly or indirectly initiates, directs, controls or knowingly causes the assertion, including a proxy acting at the Patent Licensee's direction or on its behalf.
+The fixed profile covers an affirmative patent-infringement proceeding directed at the exact Covered Implementation when the Patent Licensee directly or indirectly initiates, maintains, directs, controls or knowingly causes the assertion. The operative claimant limb uses the same causation/control concepts, so a knowingly caused assertion cannot escape merely because the proxy is not formally acting “on behalf of” the Patent Licensee.
 
-The proxy limb is deliberately bounded. Passive investment, an arm's-length patent transfer without an assertion purpose, ordinary legal funding without control and an unrelated Affiliate assertion do not automatically trigger termination.
+A covered proceeding already pending before the person would first acquire the public direct grant prevents initial acquisition while that proceeding remains pending. Once it is fully withdrawn, dismissed or otherwise ceases to satisfy the trigger, the person may qualify prospectively if every other condition is met.
+
+The proxy limb is deliberately bounded. Passive investment, an arm's-length patent transfer without an assertion purpose, ordinary legal funding without direction/control or knowing causation, and an unrelated Affiliate assertion do not automatically trigger termination.
 
 The profile still does not trigger merely because the Patent Licensee:
 
@@ -198,6 +205,8 @@ The notice must be verifiably attributable to the Patent Licensor or an authoriz
 ### D14 — Exhaustion and independent grants cannot be clawed back
 
 Termination is limited to the permission created by the relevant Patent Licensor under the exact bundle. It does not reverse exhaustion or terminate rights obtained under Apache-2.0, GPLv3, MPL-2.0, CERN-OHL-v2, FRAND/RAND, another ECL-PL bundle, another contract or statute.
+
+The ECL-derived initial-grant gate can define whether **ECL-PL itself** authorizes a sale or other disposition before exhaustion arises. It cannot reverse exhaustion already completed under applicable law or negate an independently authorized transaction outside ECL-PL.
 
 ### D15 — ECL composition is a patent-specific adapter
 
@@ -235,13 +244,17 @@ Review whether stable ECL-PL should additionally use `no-charge`, address pre-ex
 
 The absence of a special have-made permission is conservative. Test whether the public-direct + exact-project eligibility model is workable for foundries, contract manufacturers and multi-customer suppliers and whether stable v1 needs a structured service/manufacturing permission that cannot launder an ineligible principal's activity.
 
-### R5 — Customer and distributor scenarios under public direct grant
+### R5 — Customer, distributor and exhaustion scenarios under public direct grant
 
-Test cloud services, embedded components, distributors, resellers, integrators, repair, resale, method claims and exhaustion. Ensure the public direct grant does not accidentally cover unrelated customer implementations or combinations and does not let an ECL-restricted principal obtain an authorized sale through an otherwise eligible intermediary where the exact ECL rule is intended to prohibit that project.
+Test cloud services, embedded components, distributors, resellers, integrators, repair, resale, method claims and exhaustion. Ensure the public direct grant does not accidentally cover unrelated customer implementations or combinations and does not let an ECL-restricted recipient/project obtain an exhaustion-producing ECL-PL-authorized sale through an otherwise eligible intermediary where the exact policy is intended to block that route.
+
+Also distinguish ECL-PL authorization from an independent authorization that may lawfully produce exhaustion despite the ECL-PL policy.
 
 ### R6 — Narrow termination trigger
 
 Review whether the fixed trigger is still too narrow because it excludes pre-suit demands, some ITC/import proceedings or certain indirect-infringement assertions, and whether the bounded proxy rule catches deliberate assertion-entity routing without capturing legitimate arm's-length transfers, financing or defensive conduct.
+
+Review the initial-eligibility treatment of proceedings already pending when a recipient would otherwise acquire the grant, including what counts as “maintaining” a proceeding and when a proceeding has ceased to satisfy the trigger.
 
 ### R7 — Cure period and authenticated notice
 
@@ -267,7 +280,7 @@ Review US state contract law, Spanish/EU mandatory rules, UK reasonableness/cons
 
 These remain the highest competition/standards-risk feature. Before stable enablement, test Regulation (EU) 2026/877, the 2026 Technology Transfer Guidelines, Article 101 TFEU outside the block exemption, Article 102 where relevant, SEP/FRAND commitments and national public-policy constraints.
 
-The legal review must also test whether the exact ECL `R`/scoped-`S`, Restricted Project, Covered Associate, exclusion and Independent Remediation boundaries survive patent translation without either an outsourcing loophole or scope inflation.
+The legal review must also test whether the exact ECL `R`/scoped-`S`, Restricted Project, Covered Associate, exclusion and Independent Remediation boundaries survive patent translation without either an outsourcing/authorized-sale loophole or scope inflation.
 
 ### R13 — Suspension and limitation semantics
 
@@ -292,30 +305,35 @@ The first PR review should test at least:
 1. contributor with no patent title attempts to publish a bundle — no grant;
 2. patent owner grants an enumerated claim and later obtains a continuation claim — no automatic retroactive coverage;
 3. recipient holds a separate time-limited commercial licence — its existence/expiration must not mutate the ECL-PL Covered Patent Claim set;
-4. `direct-grant` + `sublicensing: expressly-granted` — must be incompatible with `draft.1`;
-5. `sublicense-chain` — must be incompatible with `draft.1`;
-6. `hybrid` downstream model — must be incompatible with `draft.1`;
-7. any optional `have_made`, `affiliates`, `contract_manufacturers` or `customers` field — must be incompatible with `draft.1`;
-8. ineligible Restricted Party hires a nominally eligible contract manufacturer for the restricted project — exact ECL project/association/anti-circumvention rule must resolve the acts or the candidate fails closed;
-9. independent contractor acts on an unrelated eligible project — relationship label alone must not make it restricted;
-10. narrow termination profile plus custom trigger fields — must be incompatible with the fixed profile;
-11. `defensive_termination.profile: custom` — must be incompatible with `draft.1` until the schema contains an explicit licensed-right termination scope;
-12. defensive counterclaim after Patent Licensor sues first — must not trigger fixed retaliation;
-13. Patent Licensee directs a controlled assertion entity to sue over the exact Covered Implementation — proxy path must trigger;
-14. unrelated Affiliate independently sues without Licensee direction/control — must not trigger solely by affiliation;
-15. cure available + withdrawal within thirty days of authenticated notice — termination never becomes effective and no interim unlicensed gap exists;
-16. delayed Patent Licensor notice — cure clock and termination are delayed rather than creating retroactive infringement exposure;
-17. offensive assertion against a modified product outside the exact Covered Implementation — must not trigger merely by similarity;
-18. existing Apache-2.0 patent permission remains independently usable after ECL-PL termination;
-19. authorized sale causes exhaustion before later ECL-PL termination — exhaustion is not reversed;
-20. exact ECL Bundle later receives a successor Schedule — old PatentGrantBundle does not mutate;
-21. unfavorable Exergism score with no exact operative ECL classification — no ECL-PL restriction;
-22. scoped ECL `S` classification — patent consequence must not expand outside the exact restricted capacity;
-23. ECL Independent Remediation Activity or exact Schedule exclusion — patent translation must preserve it;
-24. FRAND-encumbered SEP plus discriminatory ECL eligibility policy — specialist review required and policy may be unusable;
-25. covered patent is assigned after grant — immutable history remains, successor effect requires applicable-law analysis;
-26. ECL policy attempts `suspend-existing-rights` without an objectively resolvable restoration condition — must be ineligible for operativeness;
-27. recipient does not sign a bilateral contract but relies on the public patent permission — identify which conditions remain enforceable and on what legal theory.
+4. recipient relies on a research/statutory exception and later commercializes or the exception changes — the exception must not mutate the ECL-PL Covered Patent Claim set;
+5. `direct-grant` + `sublicensing: expressly-granted` — must be incompatible with `draft.1`;
+6. `sublicense-chain` — must be incompatible with `draft.1`;
+7. `hybrid` downstream model — must be incompatible with `draft.1`;
+8. any optional `have_made`, `affiliates`, `contract_manufacturers` or `customers` field — must be incompatible with `draft.1`;
+9. ineligible Restricted Party hires a nominally eligible contract manufacturer for the restricted project — exact ECL project/association/anti-circumvention rule must resolve the acts or the candidate fails closed;
+10. eligible distributor makes an arm's-length sale to an ineligible recipient under an ECL-derived policy intended to withhold patent permission — the exact frozen rule/effect must resolve the exhaustion-producing disposition or the candidate fails closed;
+11. the same sale is independently authorized under another surviving licence — ECL-PL must not pretend it can erase exhaustion produced by that independent authorization;
+12. independent contractor acts on an unrelated eligible project — relationship label alone must not make it restricted;
+13. narrow termination profile plus custom trigger fields — must be incompatible with the fixed profile;
+14. `defensive_termination.profile: custom` — must be incompatible with `draft.1` until the schema contains an explicit licensed-right termination scope;
+15. defensive counterclaim after Patent Licensor sues first — must not trigger fixed retaliation;
+16. Patent Licensee directs or knowingly causes an assertion entity to sue over the exact Covered Implementation — proxy path must trigger even if the proxy is not formally acting on the Licensee's behalf;
+17. unrelated Affiliate independently sues without Licensee direction/control/knowing causation — must not trigger solely by affiliation;
+18. offensive covered proceeding was filed before the person would first acquire ECL-PL and remains pending — person must not acquire the grant while maintaining it;
+19. pre-grant covered proceeding is withdrawn/dismissed — person may qualify only prospectively if all other conditions are met;
+20. cure available + withdrawal within thirty days of authenticated notice — termination never becomes effective and no interim unlicensed gap exists;
+21. delayed Patent Licensor notice — cure clock and termination are delayed rather than creating retroactive infringement exposure;
+22. offensive assertion against a modified product outside the exact Covered Implementation — must not trigger merely by similarity;
+23. existing Apache-2.0 patent permission remains independently usable after ECL-PL termination;
+24. authorized sale causes exhaustion before later ECL-PL termination — exhaustion is not reversed;
+25. exact ECL Bundle later receives a successor Schedule — old PatentGrantBundle does not mutate;
+26. unfavorable Exergism score with no exact operative ECL classification — no ECL-PL restriction;
+27. scoped ECL `S` classification — patent consequence must not expand outside the exact restricted capacity;
+28. ECL Independent Remediation Activity or exact Schedule exclusion — patent translation must preserve it;
+29. FRAND-encumbered SEP plus discriminatory ECL eligibility policy — specialist review required and policy may be unusable;
+30. covered patent is assigned after grant — immutable history remains, successor effect requires applicable-law analysis;
+31. ECL policy attempts `suspend-existing-rights` without an objectively resolvable restoration condition — must be ineligible for operativeness;
+32. recipient does not sign a bilateral contract but relies on the public patent permission — identify which conditions remain enforceable and on what legal theory.
 
 ## 9. Qualified review remains mandatory
 
