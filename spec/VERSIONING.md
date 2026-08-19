@@ -18,6 +18,8 @@ PatentGrantBundle
 
 Every stable component and every operative bundle must be immutable and content-addressable. A manifest, evidence snapshot or maintainer action is not independently sufficient to create patent rights.
 
+The **legal grant core** is the exact `PatentLicenseRelease` plus the exact `PatentGrantManifest`. Retained evidence participates in bundle identity and reproducible release validation; it does not silently become additional licence text or grant terms unless the legal core expressly gives a retained artifact normative effect.
+
 ## 2. PatentLicenseRelease
 
 A `PatentLicenseRelease` is an exact immutable legal-text artifact. Stable releases should use semantic-versioning discipline:
@@ -57,7 +59,7 @@ evidence/...
 2. LF (`0x0A`) is the only line separator.
 3. The first line is exactly `ECL-PL-BUNDLE-INDEX-v1`.
 4. Every subsequent line is exactly `<lowercase-sha256><two ASCII spaces><canonical-member-path>`.
-5. The member set is **exactly** `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and every evidence member referenced by the manifest. An unreferenced evidence member or any other additional member is invalid even if it is listed in the index.
+5. The member set is **exactly** `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and every evidence member required by the applicable evidence-closure rule. The default closure begins with evidence directly referenced by the manifest; an applicable fixed release/security profile may require additional content-addressed transitive evidence. An evidence member outside the applicable closure or any other additional member is invalid even if listed in the index.
 6. A `canonical-member-path` is exactly one of the two fixed paths above, `evidence/patents/sha256/<64 lowercase hex>`, or `evidence/identity/sha256/<64 lowercase hex>`. No other spelling is indexable.
 7. Entries are sorted by the raw UTF-8 bytes of `canonical-member-path`, ascending.
 8. Each member path occurs exactly once.
@@ -76,6 +78,8 @@ ECL-PL-BUNDLE-v1:<sha256-of-exact-BUNDLE-INDEX-bytes>
 ```
 
 Therefore two packages cannot have the same bundle identity while differing in the license, manifest, retained evidence, member names or member hashes. Display identifiers may additionally mention the PatentLicenseRelease and PatentGrantManifest IDs, but they are not the canonical bundle identity.
+
+Every **operative** PatentGrantBundle is physically serialized only as the exact `ECLPLB1` protocol object defined by `spec/CONTAINER-PROFILE.md`. The logical member rules in this section do not authorize ZIP, TAR, raw filesystem trees or implementation-selected packaging alternatives.
 
 ## 5. No retroactive mutation
 
@@ -105,15 +109,42 @@ superseded
 withdrawn
 ```
 
-`operative` is reserved for an exact PatentGrantBundle that passes all future release/legal-review gates.
+`operative` is reserved for an exact PatentGrantBundle that passes all release/legal-review gates. `operative` is a Bundle state, not a permitted standalone `PatentGrantManifest.status` value.
+
+A Bundle being newly marked operative MUST embed a manifest whose exact immutable `status` value is `candidate`. A manifest whose status is `draft`, `superseded` or `withdrawn` is ineligible for a new operative transition.
+
+The schema intentionally permits unresolved values while authoring drafts/candidates. Before a Bundle may be marked operative, release tooling MUST reject every normative `not-decided` value in:
+
+- `claim_scope.later_acquired_claims`;
+- `claim_scope.combination_expansion`;
+- `downstream_policy.model`;
+- `downstream_policy.sublicensing`;
+- `downstream_policy.have_made` when present;
+- `downstream_policy.affiliates` when present;
+- `downstream_policy.contract_manufacturers` when present;
+- `downstream_policy.customers` when present;
+- `defensive_termination.profile` when `defensive_termination` is present; and
+- `defensive_termination.cure_or_withdrawal` when that field is present.
+
+This semantic-completion gate does not convert provenance uncertainty such as a historically `unknown` patent status into a legal conclusion; it only prevents an operative grant from carrying unresolved normative choices about its own grant mechanics.
 
 The bundle must not become operative unless the named Patent Licensor, through an authenticated person or mechanism with asserted authority to bind that Patent Licensor, performs an attributable approval/adoption act cryptographically bound to the exact bundle identity. Maintainer publication or approval cannot substitute for Patent Licensor assent.
 
 Merge to `main`, schema validity, maintainer signature, GitHub release publication, a patent number, review of different bytes, or an operative ECL Bundle do not independently make an ECL-PL grant operative.
 
-## 9. Immutable legal-review inputs
+## 9. Immutable legal-review and validation-profile inputs
 
 Stable/operative artifacts require legal review bound to immutable inputs. Historical review inputs and records must remain frozen and content-addressed; later edits to canonical specifications do not retroactively alter what a reviewer reviewed. Material changes require delta review.
+
+The immutable release/revalidation record MUST additionally bind the exact bytes or SHA-256 of every normative validation input used for that operative decision, including at least:
+
+- `spec/VERSIONING.md`;
+- `spec/SECURITY-PROFILE.md`;
+- `spec/CONTAINER-PROFILE.md`;
+- `schemas/schema-set.json` and every schema resource listed by it; and
+- `spec/COMPOSITION-WITH-ECL.md` when an operative ECL policy reference is present.
+
+A human-readable profile ID or a later file carrying the same profile ID is not permission to substitute changed semantics. Revalidation of an historical operative record uses the exact retained/content-addressed validation inputs bound to that record, not mutable repository `main`, local defaults or a later specification revision.
 
 ## 10. Grant release workflow
 
@@ -124,17 +155,20 @@ Expected workflow:
 2. Prepare exact PatentGrantManifest bytes
 3. Validate raw JSON lexical safety before general parsing
 4. Parse and validate syntax/schema using the closed schema resource set
-5. Recompute all declared hashes
-6. Resolve patent-publication identities and authoritative state
-7. Verify every retained evidence member against BUNDLE-INDEX
-8. Verify the Patent Licensor identity reference, pinned attestation profile, verifier key and retained attestation
-9. Resolve any exact ECL Bundle reference
-10. Complete grant-specific legal/policy review
-11. Construct canonical BUNDLE-INDEX and verify the closed member set
-12. Compute exact PatentGrantBundle identity
-13. Obtain authenticated Patent Licensor approval bound to that identity
-14. Preserve and verify the approval record
-15. Mark operative only if every gate passes
+5. If targeting operativeness, enforce manifest-status and normative semantic-completion gates
+6. Recompute all declared hashes
+7. Resolve patent-publication identities and authoritative state
+8. Verify every retained evidence member against BUNDLE-INDEX and the applicable evidence closure
+9. Verify the Patent Licensor identity reference, pinned attestation profile, verifier key and retained attestation
+10. Resolve any exact ECL Bundle reference
+11. Complete grant-specific legal/policy review
+12. Construct canonical BUNDLE-INDEX and verify the closed member set
+13. Serialize and validate the exact ECLPLB1 physical container
+14. Compute exact PatentGrantBundle identity and required physical-package hashes
+15. Bind the immutable validation-profile/release inputs
+16. Obtain authenticated Patent Licensor approval bound to that identity
+17. Preserve and verify the approval record
+18. Mark operative only if every gate passes
 ```
 
 ### 10.1 Patent publication identity and state
@@ -256,7 +290,7 @@ Every evidence member path is content-addressed and valid before it can appear i
 - the terminal digest must equal the SHA-256 of the exact member bytes and the corresponding snapshot `sha256`;
 - `/` is the only separator;
 - empty segments, `.` segments, `..` segments, repeated separators, leading/trailing separators, backslashes, percent encodings, Unicode variants, case variants and trailing dot/space aliases are forbidden;
-- every evidence path in the index must be referenced by the manifest, and every manifest-referenced evidence path must appear exactly once in the index;
+- every evidence path in the index must belong to the applicable evidence closure, and every member required by that closure must appear exactly once in the index;
 - raw physical member names are validated against this exact ASCII grammar and the closed index before extraction.
 
 Because both evidence namespaces and digest spellings are fixed lowercase ASCII, conforming evidence names cannot differ only by platform case-folding or trailing-dot rules. Validation never consults a target filesystem to decide whether two names collide.
@@ -291,6 +325,8 @@ A validator that is given only `patent-grant.schema.json` without the verified r
 
 ## 11. Suggested repository layout
 
+The directory form below is a **repository/staging representation only**. It is useful for authoring and inspection but is not itself an operative physical PatentGrantBundle:
+
 ```text
 versions/
   licenses/
@@ -320,7 +356,7 @@ reviews/
     records/
 ```
 
-Physical packaging may later use an archive, but a packaging format must preserve the logical member names and exact indexed bytes. Symlinks and archive path aliases are not bundle semantics.
+Every operative physical PatentGrantBundle is the one exact `ECLPLB1` serialized byte sequence required by `spec/CONTAINER-PROFILE.md`. A ZIP, TAR, raw filesystem tree, copied directory or other archive/container is not an alternate operative encoding. Extraction may be used only after validation for inspection and never defines package identity or operativeness.
 
 ## 12. Revocation, withdrawal and termination
 
