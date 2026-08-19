@@ -71,6 +71,26 @@ evidence/...
 
 For every listed member, tooling hashes the exact member bytes and requires equality with the digest in the index. No path normalization, filesystem aliasing, symlink following, case folding, percent decoding, Unicode normalization or separator rewriting is permitted during lookup.
 
+The two legal-core members have additional cross-object binding requirements. After `manifest/patent-grant.json` has passed the raw lexical gate and closed-schema validation, tooling MUST compute:
+
+```text
+license_member_sha256 = SHA-256(exact bytes of license/PATENT-LICENSE)
+manifest_member_sha256 = SHA-256(exact bytes of manifest/patent-grant.json)
+```
+
+It MUST then require, byte-for-byte as lowercase hexadecimal SHA-256 values:
+
+```text
+license_member_sha256
+  = BUNDLE-INDEX digest for license/PATENT-LICENSE
+  = PatentGrantManifest.patent_license.sha256
+
+manifest_member_sha256
+  = BUNDLE-INDEX digest for manifest/patent-grant.json
+```
+
+A manifest that names or hashes a different PatentLicenseRelease than the exact `license/PATENT-LICENSE` member is bundle-invalid even if both files independently hash correctly. `patent_license.id` is display/resolution metadata for that same immutable release and MUST NOT be used to override a hash mismatch.
+
 The canonical machine identity is:
 
 ```text
@@ -158,7 +178,7 @@ Expected workflow:
 3. Validate raw JSON lexical safety before general parsing
 4. Parse and validate syntax/schema using the closed schema resource set
 5. If targeting operativeness, enforce manifest-status, authority-checked and normative semantic-completion gates
-6. Recompute all declared hashes
+6. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality invariants
 7. Resolve patent-publication identities and authoritative state
 8. Verify every retained evidence member against BUNDLE-INDEX and the applicable evidence closure
 9. Verify the Patent Licensor identity reference, pinned attestation profile, verifier key and retained attestation
@@ -196,7 +216,21 @@ For USPTO identifiers, A1/A2 application-publication identities use the 2001+ ye
 
 ### 10.2 Patent Licensor identity schemes and individual-attestation profile
 
-Legal entities may use public, authority-specific identifiers (`lei`, `company-registry`, `court-or-agency-record`, or `other-authoritative-registry`) with a corroborating HTTPS record and integrity evidence.
+Legal entities may use public, authority-specific identifiers (`lei`, `company-registry`, `court-or-agency-record`, or `other-authoritative-registry`), but the mutable HTTPS locator is provenance only. Every legal-entity identity reference MUST also carry `record_snapshot`, and that snapshot MUST retain the exact reviewed registry/authority response as an indexed content-addressed identity-evidence member.
+
+For a legal entity, release tooling MUST:
+
+1. require `record_snapshot.bundle_path` to be exactly `evidence/identity/sha256/<record_snapshot.sha256>`;
+2. require that path exactly once in `BUNDLE-INDEX`;
+3. hash the exact retained member bytes and require the path digest, index digest and `record_snapshot.sha256` all to equal the recomputed digest;
+4. require `record_snapshot.media_type = application/json`;
+5. require `record_snapshot.decoder_profile_id = urn:ecl-pl:identity-evidence-decoder:strict-json-v1`;
+6. decode only the retained bytes, never a fresh response from `record_uri`, when reproducing the release decision; and
+7. require the decoded retained record to substantiate the same exact `scheme`, `identifier`, `jurisdiction` and authoritative record represented by `record_uri`, under the exact reviewed scheme-specific resolver/mapping profile bound into the immutable release/revalidation inputs. If no such deterministic mapping profile is bound, or if the retained bytes are ambiguous or insufficient, validation fails closed.
+
+`urn:ecl-pl:identity-evidence-decoder:strict-json-v1` means: exact bytes must be strict UTF-8 with no BOM or replacement decoding; before semantic parsing they pass the raw JSON lexical gate in section 10.3; duplicate decoded member names and unpaired surrogates are rejected; no Unicode normalization, number coercion, network lookup, external-reference substitution or parser repair may change the retained evidence. The decoder only establishes one deterministic JSON data model. Scheme-specific interpretation remains governed by the separately bound reviewed resolver/mapping profile.
+
+`record_uri` may be used during preparation to obtain the source evidence and as provenance for human audit, but later mutation, disappearance or different content at that URI cannot change or repair the retained snapshot.
 
 Individuals use only `scheme: authoritative-opaque-token`. The manifest must additionally contain the fixed `attestation_profile`, a bundle-pinned `attestation_verifier` Ed25519 key, and an `attestation_snapshot`.
 
