@@ -32,7 +32,7 @@ Likewise, applying ECL-PL does not itself grant copyright/software rights under 
 
 An ECL release resolves an exact ECL Bundle under the ECL repository's own versioning model.
 
-An ECL-PL release resolves an exact PatentGrantBundle:
+An ECL-PL release resolves an exact closed PatentGrantBundle:
 
 ```text
 ECL Bundle
@@ -42,9 +42,12 @@ ECL Bundle
 PatentGrantBundle
   = exact ECL-PL PatentLicenseRelease
   + exact PatentGrantManifest
+  + required retained evidence
 ```
 
-Neither tuple is implicitly embedded into the other.
+For ECL-PL, the **legal grant core** remains the exact PatentLicenseRelease plus the exact PatentGrantManifest. Required retained evidence participates in immutable bundle identity and reproducible validation but does not silently import additional legal terms. `BUNDLE-INDEX` commits to the complete non-index member set, and an operative bundle is physically serialized only as `ECLPLB1` under `spec/CONTAINER-PROFILE.md`.
+
+Neither ECL's release tuple nor ECL-PL's legal grant core is implicitly embedded into the other.
 
 ## 4. Optional immutable ECL reference
 
