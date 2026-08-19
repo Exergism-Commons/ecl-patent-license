@@ -128,6 +128,8 @@ The schema intentionally permits unresolved values while authoring drafts/candid
 
 This semantic-completion gate does not convert provenance uncertainty such as a historically `unknown` patent status into a legal conclusion; it only prevents an operative grant from carrying unresolved normative choices about its own grant mechanics.
 
+In addition, `provenance.authority_checked` MUST be the JSON boolean `true` before a Bundle may become operative. A schema-valid candidate that explicitly records `authority_checked: false` is ineligible for the operative transition; maintainer publication or the Patent Licensor's later assent does not retroactively substitute for the required authority/provenance check.
+
 The bundle must not become operative unless the named Patent Licensor, through an authenticated person or mechanism with asserted authority to bind that Patent Licensor, performs an attributable approval/adoption act cryptographically bound to the exact bundle identity. Maintainer publication or approval cannot substitute for Patent Licensor assent.
 
 Merge to `main`, schema validity, maintainer signature, GitHub release publication, a patent number, review of different bytes, or an operative ECL Bundle do not independently make an ECL-PL grant operative.
@@ -155,7 +157,7 @@ Expected workflow:
 2. Prepare exact PatentGrantManifest bytes
 3. Validate raw JSON lexical safety before general parsing
 4. Parse and validate syntax/schema using the closed schema resource set
-5. If targeting operativeness, enforce manifest-status and normative semantic-completion gates
+5. If targeting operativeness, enforce manifest-status, authority-checked and normative semantic-completion gates
 6. Recompute all declared hashes
 7. Resolve patent-publication identities and authoritative state
 8. Verify every retained evidence member against BUNDLE-INDEX and the applicable evidence closure
