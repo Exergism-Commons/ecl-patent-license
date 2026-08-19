@@ -30,6 +30,14 @@ A `PatentLicenseRelease` is an exact immutable legal-text artifact. Stable relea
 
 Any uncertainty over whether a change affects rights should be treated conservatively as legally substantive and receive delta review. A version label is not operative identity; every release also has a cryptographic content hash.
 
+For bundle/release validation, the canonical machine identifier of a PatentLicenseRelease is derived from the exact legal-text bytes:
+
+```text
+urn:ecl-pl:patent-license-release:sha256:<64 lowercase hexadecimal SHA-256 characters>
+```
+
+For a Bundle being newly marked operative, `PatentGrantManifest.patent_license.id` MUST equal that exact canonical identifier formed with `PatentGrantManifest.patent_license.sha256`. Human-readable semantic-version labels may be displayed separately, but they are not permitted to replace or contradict this machine identity.
+
 ## 3. PatentGrantManifest identity
 
 A `PatentGrantManifest` is an immutable declaration tied to one Patent Licensor and one exact PatentLicenseRelease.
@@ -59,7 +67,7 @@ evidence/...
 2. LF (`0x0A`) is the only line separator.
 3. The first line is exactly `ECL-PL-BUNDLE-INDEX-v1`.
 4. Every subsequent line is exactly `<lowercase-sha256><two ASCII spaces><canonical-member-path>`.
-5. The member set is **exactly** `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and every evidence member required by the applicable evidence-closure rule. The default closure begins with evidence directly referenced by the manifest; an applicable fixed release/security profile may require additional content-addressed transitive evidence. An evidence member outside the applicable closure or any other additional member is invalid even if listed in the index.
+5. The member set is **exactly** `license/PATENT-LICENSE`, `manifest/patent-grant.json`, and every evidence member required by the applicable evidence-closure rule. The default closure begins with typed content-addressed snapshots directly referenced by the manifest; an applicable fixed release/security profile may require additional content-addressed transitive evidence. Generic `evidenceReference` objects that do not contain a canonical bundle path are provenance-only and are explicitly excluded from this closure as specified in section 10.4. An evidence member outside the applicable closure or any other additional member is invalid even if listed in the index.
 6. A `canonical-member-path` is exactly one of the two fixed paths above, `evidence/patents/sha256/<64 lowercase hex>`, or `evidence/identity/sha256/<64 lowercase hex>`. No other spelling is indexable.
 7. Entries are sorted by the raw UTF-8 bytes of `canonical-member-path`, ascending.
 8. Each member path occurs exactly once.
@@ -89,7 +97,14 @@ manifest_member_sha256
   = BUNDLE-INDEX digest for manifest/patent-grant.json
 ```
 
-A manifest that names or hashes a different PatentLicenseRelease than the exact `license/PATENT-LICENSE` member is bundle-invalid even if both files independently hash correctly. `patent_license.id` is display/resolution metadata for that same immutable release and MUST NOT be used to override a hash mismatch.
+It MUST additionally require:
+
+```text
+PatentGrantManifest.patent_license.id
+  = "urn:ecl-pl:patent-license-release:sha256:" || license_member_sha256
+```
+
+where `||` denotes exact ASCII concatenation. A manifest that names or hashes a different PatentLicenseRelease than the exact `license/PATENT-LICENSE` member is bundle-invalid even if the files independently hash correctly. No mutable version registry, human display label, URI resolution, repository filename or implementation-local mapping may override either the digest equality or the canonical ID-to-digest mapping.
 
 The canonical machine identity is:
 
@@ -164,8 +179,10 @@ The immutable release/revalidation record MUST additionally bind the exact bytes
 - `spec/SECURITY-PROFILE.md`;
 - `spec/CONTAINER-PROFILE.md`;
 - `schemas/schema-set.json` and every schema resource listed by it;
-- any scheme-specific legal-entity identity resolver/mapping profile used by the release; and
+- any scheme-specific legal-entity identity resolver/mapping **and authority-authentication** profile used by the release, including the exact authority trust-anchor bytes or immutable trust-anchor set consumed by that profile; and
 - `spec/COMPOSITION-WITH-ECL.md` when an operative ECL policy reference is present.
+
+A legal-entity authority-authentication profile is not conforming merely because it deterministically parses fields. It MUST define a cryptographic origin-authentication procedure for the retained authority response, exact signature/certificate or equivalent authentication semantics, exact signed/authenticated bytes, trust-anchor selection, trust-anchor validity rules and failure behavior. The exact trust-anchor bytes or closed trust-anchor set are immutable release/revalidation inputs. A self-signed key supplied by the candidate bundle, ambient operating-system/browser trust, live HTTPS success, DNS state, or a profile that merely accepts self-described JSON fields is not an authority authentication mechanism.
 
 A human-readable profile ID or a later file carrying the same profile ID is not permission to substitute changed semantics. Revalidation of an historical operative record uses the exact retained/content-addressed validation inputs bound to that record, not mutable repository `main`, local defaults or a later specification revision.
 
@@ -179,10 +196,10 @@ Expected workflow:
 3. Validate raw JSON lexical safety before general parsing
 4. Parse and validate syntax/schema using the closed schema resource set
 5. If targeting operativeness, enforce manifest-status, authority-checked and normative semantic-completion gates
-6. Construct canonical BUNDLE-INDEX from the two fixed members and the complete evidence closure required by the manifest and applicable fixed profiles
-7. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality invariants
+6. Construct canonical BUNDLE-INDEX from the two fixed members and the complete typed/content-addressed evidence closure required by the manifest and applicable fixed profiles
+7. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality and canonical PatentLicenseRelease-ID invariants
 8. Resolve patent-publication identities and authoritative state, verifying retained patent evidence against BUNDLE-INDEX
-9. Verify the Patent Licensor identity reference and retained identity evidence against BUNDLE-INDEX; for individuals, additionally verify the pinned attestation profile, verifier key and retained attestation
+9. Verify the Patent Licensor identity reference and retained identity evidence against BUNDLE-INDEX; for legal entities, authenticate the retained authority response under the exact pinned authority-authentication profile and trust anchors; for individuals, additionally verify the pinned attestation profile, verifier key and retained attestation
 10. Resolve any exact ECL Bundle reference
 11. Complete grant-specific legal/policy review
 12. Re-verify the canonical BUNDLE-INDEX, applicable evidence closure and exact closed member set after all semantic resolution
@@ -194,7 +211,9 @@ Expected workflow:
 18. Mark operative only if every gate passes
 ```
 
-Step 6 occurs before any index-dependent hash, evidence or identity check. Step 12 is a verification pass, not permission to mutate the index in place. If patent, identity, ECL, security or legal/policy resolution reveals a required evidence member that was not included at step 6, or shows that an indexed member is outside the applicable closure, the current bundle candidate fails this workflow. Tooling must construct a new canonical `BUNDLE-INDEX` and restart the index-dependent validation steps; it MUST NOT silently append, remove or replace members after those checks have begun.
+Step 6 occurs before any index-dependent hash, evidence or identity check. Step 12 is a verification pass, not permission to mutate the index in place. If patent, identity, ECL, security or legal/policy resolution reveals a required typed/transitive evidence member that was not included at step 6, or shows that an indexed member is outside the applicable closure, the current bundle candidate fails this workflow. Tooling must construct a new canonical `BUNDLE-INDEX` and restart the index-dependent validation steps; it MUST NOT silently append, remove or replace members after those checks have begun.
+
+Generic `evidenceReference` objects lacking `bundle_path` are deliberately not inputs to step 6; section 10.4 defines them as provenance-only pointers. Tooling MUST NOT invent a bundle path or namespace for them from `sha256`, `uri`, description or surrounding field context.
 
 ### 10.1 Patent publication identity and state
 
@@ -228,10 +247,16 @@ For a legal entity, release tooling MUST:
 3. hash the exact retained member bytes and require the path digest, index digest and `record_snapshot.sha256` all to equal the recomputed digest;
 4. require `record_snapshot.media_type = application/json`;
 5. require `record_snapshot.decoder_profile_id = urn:ecl-pl:identity-evidence-decoder:strict-json-v1`;
-6. decode only the retained bytes, never a fresh response from `record_uri`, when reproducing the release decision; and
-7. require the decoded retained record to substantiate the same exact `scheme`, `identifier`, `jurisdiction` and authoritative record represented by `record_uri`, under the exact reviewed scheme-specific resolver/mapping profile bound into the immutable release/revalidation inputs. If no such deterministic mapping profile is bound, or if the retained bytes are ambiguous or insufficient, validation fails closed.
+6. decode only the retained bytes, never a fresh response from `record_uri`, when reproducing the release decision;
+7. require the decoded retained record to substantiate the same exact `scheme`, `identifier`, `jurisdiction` and authoritative record represented by `record_uri`, under the exact reviewed scheme-specific resolver/mapping profile bound into the immutable release/revalidation inputs;
+8. independently authenticate the **origin** of those retained authority-response bytes under the exact scheme-specific authority-authentication profile and exact trust-anchor bytes/set bound by section 9; and
+9. fail closed if either semantic mapping or origin authentication is absent, ambiguous, unsupported or contradictory.
 
-`urn:ecl-pl:identity-evidence-decoder:strict-json-v1` means: exact bytes must be strict UTF-8 with no BOM or replacement decoding; before semantic parsing they pass the raw JSON lexical gate in section 10.3; duplicate decoded member names and unpaired surrogates are rejected; no Unicode normalization, number coercion, network lookup, external-reference substitution or parser repair may change the retained evidence. The decoder only establishes one deterministic JSON data model. Scheme-specific interpretation remains governed by the separately bound reviewed resolver/mapping profile.
+The origin-authentication step MUST verify authority-issued cryptographic authentication over the retained response or an exact authenticated envelope that binds the retained response bytes. The profile MUST define the exact authenticated/signed byte sequence, signature or certificate semantics, trust-anchor selection and validity instant. Integrity from `record_snapshot.sha256` is not origin authentication. A JSON object that merely repeats the manifest's `scheme`, `identifier`, `jurisdiction` or `record_uri`, a candidate-supplied self-signed key, successful HTTPS retrieval, or a deterministic mapping profile that only inspects fields MUST NOT satisfy this gate.
+
+If the authoritative registry does not issue independently verifiable authenticated data, the scheme cannot support a newly operative ECL-PL bundle until an immutable reviewed authenticated-capture profile exists that cryptographically binds the captured authority response to an independently trusted capture mechanism and whose exact trust material is bound under section 9. No implementation may silently downgrade this requirement to an unsigned snapshot.
+
+`urn:ecl-pl:identity-evidence-decoder:strict-json-v1` means: exact bytes must be strict UTF-8 with no BOM or replacement decoding; before semantic parsing they pass the raw JSON lexical gate in section 10.3; duplicate decoded member names and unpaired surrogates are rejected; no Unicode normalization, number coercion, network lookup, external-reference substitution or parser repair may change the retained evidence. The decoder only establishes one deterministic JSON data model. Scheme-specific interpretation and origin authentication remain governed by the separately bound reviewed profiles.
 
 `record_uri` may be used during preparation to obtain the source evidence and as provenance for human audit, but later mutation, disappearance or different content at that URI cannot change or repair the retained snapshot.
 
@@ -320,17 +345,21 @@ A parser configuration that independently guarantees strict UTF-8, rejects unpai
 
 The retained identity attestation is subject to the same strict UTF-8, lone-surrogate and duplicate-member rejection before JCS processing.
 
-### 10.4 Canonical evidence paths
+### 10.4 Canonical evidence paths and generic provenance references
 
 Every evidence member path is content-addressed and valid before it can appear in `BUNDLE-INDEX`:
 
 - patent evidence is only `evidence/patents/sha256/<64 lowercase hexadecimal SHA-256 characters>`;
 - identity evidence is only `evidence/identity/sha256/<64 lowercase hexadecimal SHA-256 characters>`;
-- the terminal digest must equal the SHA-256 of the exact member bytes and the corresponding snapshot `sha256`;
+- the terminal digest must equal the SHA-256 of the exact member bytes and the corresponding typed/transitive snapshot `sha256`;
 - `/` is the only separator;
 - empty segments, `.` segments, `..` segments, repeated separators, leading/trailing separators, backslashes, percent encodings, Unicode variants, case variants and trailing dot/space aliases are forbidden;
-- every evidence path in the index must belong to the applicable evidence closure, and every member required by that closure must appear exactly once in the index;
+- every evidence path in the index must belong to the applicable typed/transitive evidence closure, and every member required by that closure must appear exactly once in the index;
 - raw physical member names are validated against this exact ASCII grammar and the closed index before extraction.
+
+The generic `$defs/evidenceReference` shape used by fields such as `patent_licensor.authority_evidence`, `provenance.evidence` and `known_encumbrances[].evidence` has no `bundle_path` and therefore has **provenance-only, non-operative semantics** in schema-set v2. Such an object is not a direct or transitive PatentGrantBundle evidence member, MUST NOT be inserted into `BUNDLE-INDEX`, and MUST NOT be used to satisfy an authority, identity, patent-state, encumbrance, legal-review or other operativeness gate. Its optional `sha256` identifies external bytes only; tooling MUST NOT infer `evidence/patents/...` or `evidence/identity/...` from that digest or from field context.
+
+Whenever an assertion must be evidentially relied upon for operativeness, the applicable immutable manifest/profile must instead provide a typed retained snapshot or transitive rule carrying an exact canonical `bundle_path`, digest and decoder/authentication semantics. If no such typed retained representation exists for a required assertion in the current schema/profile, the candidate cannot become operative on the strength of a generic `evidenceReference` and fails closed rather than inventing a path.
 
 Because both evidence namespaces and digest spellings are fixed lowercase ASCII, conforming evidence names cannot differ only by platform case-folding or trailing-dot rules. Validation never consults a target filesystem to decide whether two names collide.
 
