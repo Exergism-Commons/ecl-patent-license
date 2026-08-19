@@ -1,0 +1,386 @@
+ECL Patent License
+Version 1.0.0-draft.1
+
+NON-OPERATIVE DRAFT — NO PATENT RIGHTS ARE GRANTED BY THIS FILE ALONE.
+
+This text is an architecture-aligned drafting candidate for legal and adversarial review. It is not a stable PatentLicenseRelease and must not be represented as legally reviewed, deployable, or operative. Under the ECL-PL architecture, patent permissions can arise only through an operative PatentGrantBundle that contains the exact bytes of a PatentLicenseRelease, an exact PatentGrantManifest, all required retained evidence, and an attributable Patent Licensor approval bound to that exact bundle identity.
+
+0. STRUCTURE AND LEGAL EFFECT
+
+0.1 Reusable terms only.
+
+This License states reusable patent-licensing terms. Standing alone, publication of this text, copying it, referring to it, contributing to a repository that contains it, or distributing technology alongside it does not grant any patent right.
+
+0.2 Operative PatentGrantBundle required.
+
+A patent permission under this License exists only if an operative PatentGrantBundle identifies this exact PatentLicenseRelease and contains a PatentGrantManifest that satisfies the release requirements applicable to that bundle. The Patent Licensor must have performed the authenticated approval or adoption act required by the ECL-PL release architecture and bound that act to the exact bundle identity.
+
+0.3 Manifest-selected terms.
+
+The PatentGrantManifest supplies grant-specific facts and choices only within the meanings and limits this License gives them. A manifest cannot enlarge the Patent Licensor's authority, create a patent right that does not exist, turn provenance into title, or create a permission that this License does not support.
+
+0.4 Retained evidence.
+
+Retained evidence supports identity, provenance and reproducible validation. It does not add to or alter the legal grant unless this License and the PatentGrantManifest expressly identify a retained artifact as a normative input for a specified legal rule.
+
+0.5 No effect from repository state.
+
+Schema validity, a Git commit, a merge to a default branch, a release tag, maintainer approval, automated review, or repository publication does not by itself make a PatentGrantBundle operative or create patent rights.
+
+1. DEFINITIONS
+
+1.1 "Affiliate" means an entity that directly or indirectly controls, is controlled by, or is under common control with another entity. "Control" means the present power to direct the management of the entity, whether through ownership of more than fifty percent of voting interests, contractual power, or another legally effective means. Affiliate status is tested at the time the relevant permission is exercised and does not by itself make an Affiliate a Patent Licensee unless the PatentGrantManifest so provides.
+
+1.2 "Covered Act" means an act that, in the jurisdiction where the act occurs, would require authorization from the Patent Licensor under a Covered Patent Claim but for this License or another independent legal basis. Covered Acts are determined under applicable patent law. Words used in software, hardware or distribution practice do not create additional patent-exclusive acts.
+
+1.3 "Covered Implementation" means the exact technology identified by the PatentGrantManifest, including only the artifacts, versions, boundaries, combinations and modification scope that the manifest objectively identifies.
+
+1.4 "Covered Patent Claim" means a patent claim that (a) satisfies the exact claim-scope model selected by the PatentGrantManifest, and (b) is owned, controlled or otherwise licensable by the Patent Licensor to the extent necessary for the permission purportedly granted under this License.
+
+1.5 "Independent Patent Permission" means any right or permission to perform an act that does not depend on this License, including another patent licence or covenant, a statutory exception or limitation, exhaustion, compulsory licence, government-use authorization, permission from another relevant rightsholder, or the absence of infringement.
+
+1.6 "PatentGrantBundle" means the exact closed and immutable ECL-PL bundle identified by its canonical bundle identity under the ECL-PL release architecture.
+
+1.7 "PatentGrantManifest" means the exact immutable manifest contained in the PatentGrantBundle.
+
+1.8 "Patent Licensee" or "You" means a person or legal entity that is within the recipient class permitted by the PatentGrantManifest and that exercises or proposes to exercise a Covered Act in reliance on the patent permission granted by the Patent Licensor through the operative PatentGrantBundle. An Affiliate is not automatically included in You.
+
+1.9 "Patent Licensor" means the person or legal entity identified as patent_licensor in the PatentGrantManifest and only to the extent that person or entity owns, controls or is otherwise authorized to grant the relevant Covered Patent Claim.
+
+1.10 "PatentLicenseRelease" means the exact immutable legal-text artifact identified by the PatentGrantManifest and retained as license/PATENT-LICENSE in the PatentGrantBundle.
+
+1.11 "Sublicense" means a patent permission granted by a Patent Licensee under express sublicensing authority received from the Patent Licensor. Permission to distribute, transfer, host, modify or provide technology does not by itself imply sublicensing authority.
+
+2. EFFECTIVE TIME, DURATION AND AUTHORITY
+
+2.1 Effective time.
+
+A grant under this License takes effect no earlier than the later of (a) the effective_date stated in the PatentGrantManifest and (b) completion of the attributable Patent Licensor approval or adoption act required for the exact PatentGrantBundle to become operative. This draft does not authorize a manifest to create retroactive patent permission for acts occurring before that time.
+
+2.2 Claim duration.
+
+Subject to this License and the PatentGrantManifest, permission under a Covered Patent Claim is intended to continue for so long as authorization from the Patent Licensor would otherwise be required under that claim, unless the permission terminates earlier under an applicable termination provision. Expiration, lapse, invalidity, revocation or another legal event may make a patent permission unnecessary; this License does not convert an unavailable or unenforceable claim into an enforceable one.
+
+2.3 Authority limitation.
+
+No grant extends beyond the Patent Licensor's actual authority. The PatentGrantManifest's authority representation and retained evidence are part of the release and review record, but neither creates ownership or authority by declaration alone.
+
+2.4 No implied later authority.
+
+If the Patent Licensor later acquires ownership, control or licensing authority over a claim, that later event does not retroactively validate a grant for periods in which the Patent Licensor lacked authority. Treatment of later-acquired claims is governed by Section 4.5.
+
+3. EXPRESS PATENT GRANT
+
+3.1 Grant.
+
+Subject to all applicable terms of this License and the exact PatentGrantManifest, the Patent Licensor grants You a non-exclusive, royalty-free patent permission under the Covered Patent Claims to perform Covered Acts with respect to the Covered Implementation.
+
+3.2 Territorial meaning.
+
+The grant applies in each jurisdiction in which a Covered Patent Claim has legal effect and in which the Patent Licensor has authority to grant the relevant permission. "Worldwide" language, where used for convenience, does not create patent rights in a territory where no relevant right exists and does not displace territorial patent law.
+
+3.3 Covered Acts, not software verbs.
+
+Depending on applicable patent law and the claim involved, Covered Acts may include making, using, practicing a patented process, offering for sale, selling, importing, supplying relevant components, or another act reserved to the patent right. The factual acts of running software, deploying a service, distributing a file, publishing source code, exporting data or operating a system are Covered Acts only to the extent applicable patent law makes the particular act require authorization under a Covered Patent Claim.
+
+3.4 No automatic have-made or sublicensing right.
+
+Section 3.1 does not by itself grant a have-made right, Sublicense authority, Affiliate rights, contract-manufacturer rights, customer rights, or other downstream rights. Those matters are controlled exclusively by Section 6 and the downstream_policy in the PatentGrantManifest.
+
+4. COVERED PATENT CLAIM SCOPE
+
+4.1 General rule.
+
+The PatentGrantManifest must select one claim_scope.model. The selected model is applied only against the exact Covered Implementation and the Patent Licensor's actual licensable authority.
+
+4.2 necessarily-infringed.
+
+If claim_scope.model is necessarily-infringed, a claim is covered only if practicing the Covered Implementation within the exact boundaries stated by the PatentGrantManifest would necessarily require authorization under that claim in the relevant jurisdiction, absent this License or another Independent Patent Permission. A claim is not brought into scope merely because some optional modification, additional component, alternative implementation or external combination could infringe it.
+
+4.3 enumerated-only.
+
+If claim_scope.model is enumerated-only, only the exact claims enumerated by the PatentGrantManifest are eligible to be Covered Patent Claims. No family member, continuation, divisional, reissue, validation, foreign counterpart, additional claim, amended claim or later-issued claim enters the grant merely by relationship to an enumerated claim.
+
+4.4 hybrid or other reviewed model.
+
+If claim_scope.model is hybrid, each part of the hybrid rule must be given effect according to the complete definition encoded by the PatentGrantManifest without using one part to enlarge another beyond its stated boundary. If claim_scope.model is other, the bundle may become operative under this PatentLicenseRelease only if the manifest supplies a complete, objectively executable scope definition and the legal-review record expressly approves that model for the exact candidate. An undefined portfolio-wide formulation is not a supported scope model.
+
+4.5 Later-acquired claims.
+
+If claim_scope.later_acquired_claims is excluded-unless-added, a claim over which the Patent Licensor later acquires authority is not covered unless a new operative PatentGrantBundle adds it or otherwise brings it into scope.
+
+If claim_scope.later_acquired_claims is included-if-rule-satisfied, a later-acquired claim becomes eligible for coverage only from the time the Patent Licensor obtains authority to grant it, only if it independently satisfies the same claim-scope rule against the same immutable Covered Implementation, and only to the extent inclusion is lawful and consistent with prior commitments. Inclusion is prospective and does not create liability or permission under this License for an earlier period in which the Patent Licensor lacked authority.
+
+A PatentGrantBundle containing not-decided for later_acquired_claims cannot become operative under this PatentLicenseRelease.
+
+4.6 Combination expansion.
+
+If claim_scope.combination_expansion is no-expansion, adding material outside the Covered Implementation does not enlarge the Covered Patent Claim set.
+
+If it is defined-combinations-only, expansion is limited to the combinations objectively and completely identified by the PatentGrantManifest's combination boundary.
+
+If it is rule-based, expansion is limited to the exact complete combination rule whose text and digest are bound by the PatentGrantManifest.
+
+A combination cannot expand the Patent Licensor's actual authority or convert a claim into a Covered Patent Claim merely because the combination is commercially related to the Covered Implementation.
+
+5. TERRITORIAL LAW, STATUTORY LIMITS AND EXHAUSTION
+
+5.1 Territorial patent law controls infringement.
+
+Whether a particular act would infringe a Covered Patent Claim, and therefore whether permission under this License is necessary, is determined by the patent law applicable to that act. This License does not define a universal infringement test.
+
+5.2 Statutory rights and exceptions preserved.
+
+Nothing in this License restricts an act that applicable law permits without the Patent Licensor's authorization, including any applicable research, experimental, regulatory, prior-user, compulsory-licence, government-use or other statutory permission or limitation.
+
+5.3 Exhaustion preserved.
+
+Nothing in this License recreates patent control over an article, product or transaction to the extent applicable law has exhausted the relevant patent right. Termination, suspension, restriction or expiration of a permission under this License does not reverse an exhaustion event that applicable law treats as legally complete.
+
+5.4 No admission.
+
+Exercising or relying on this License is not, by itself, an admission that a Covered Patent Claim is valid, enforceable, infringed, essential, or necessary to practice the Covered Implementation.
+
+6. DOWNSTREAM RIGHTS
+
+6.1 Release-level fail-closed rule for conditional values.
+
+Version 1.0.0-draft.1 does not support a downstream_policy value of conditional unless a future reviewed PatentLicenseRelease defines and binds an exact machine-resolvable condition object for that field. Because the current manifest schema does not itself provide such a generic condition object, a PatentGrantBundle selecting conditional for sublicensing, have_made, affiliates, contract_manufacturers or customers is not eligible to become operative under this PatentLicenseRelease.
+
+6.2 Direct-grant model.
+
+If downstream_policy.model is direct-grant, a person or entity that falls within an expressly permitted downstream class receives any patent permission directly from the Patent Licensor under the operative PatentGrantBundle. A distributor, integrator or other intermediary does not become the legal source of that direct grant.
+
+6.3 Sublicense-chain model.
+
+If downstream_policy.model is sublicense-chain, downstream rights that depend on a Sublicense exist only if downstream_policy.sublicensing is expressly-granted and the Sublicense remains within the scope of the Patent Licensee's own permission. A Sublicense may not enlarge the Covered Patent Claim set, Covered Implementation, Covered Acts, duration, territory or Patent Licensor authority.
+
+A sublicense-chain selection combined with sublicensing: not-granted is incompatible with this PatentLicenseRelease and cannot become operative.
+
+6.4 Hybrid model.
+
+If downstream_policy.model is hybrid, each downstream class must receive rights only through the direct-grant or Sublicense path expressly assigned to it by the PatentGrantManifest and this License. Ambiguity over the source of a downstream permission is resolved against creation of additional patent rights.
+
+6.5 Sublicensing flag.
+
+If sublicensing is not-granted, You receive no authority from this License to grant a Sublicense.
+
+If sublicensing is expressly-granted, You may grant a Sublicense only within the scope You received, subject to the same applicable claim, implementation, territorial, exhaustion, mandatory-law and termination limits. You may not state or imply that You own the Covered Patent Claims merely because You have sublicensing authority.
+
+6.6 Have-made right.
+
+If downstream_policy.have_made is included, You may engage a third party to perform manufacturing or other covered production acts for Your account to the extent those acts are Covered Acts and remain within the Covered Implementation. That permission does not give the third party an independent right to manufacture for unrelated customers, sell outside the authorized chain, or practice the Covered Patent Claims for its own separate purposes.
+
+If have_made is excluded or absent, no have-made right is implied.
+
+6.7 Contract manufacturers.
+
+If downstream_policy.contract_manufacturers is included, a contract manufacturer receives only the permission necessary to perform the authorized contracted acts for a Patent Licensee and only while acting within that relationship. This selection is incompatible with have_made: excluded under this PatentLicenseRelease.
+
+If contract_manufacturers is excluded or absent, no direct or derivative contract-manufacturer permission is created by this License, without prejudice to Independent Patent Permissions.
+
+6.8 Affiliates.
+
+If downstream_policy.affiliates is included, an Affiliate is treated as included with the Patent Licensee only while the required control relationship exists and only within the same grant scope. Loss of Affiliate status ends that Affiliate inclusion prospectively, but does not reverse exhaustion or terminate Independent Patent Permissions.
+
+If affiliates is excluded or absent, Affiliates receive no permission merely from affiliation.
+
+If affiliates is separate-direct-grants, each Affiliate requires its own attributable direct patent-grant basis and is not included automatically under this PatentGrantBundle.
+
+6.9 Customers.
+
+If downstream_policy.customers is direct-grant, a customer that lawfully receives or uses the Covered Implementation within the authorized chain receives a direct patent permission from the Patent Licensor for the Covered Acts assigned to that customer class by the grant.
+
+If customers is derivative-right, this License does not create a separate direct customer grant. A customer's rights must instead arise through a valid Sublicense where authorized, exhaustion, another Independent Patent Permission, or another legally effective downstream basis.
+
+If customers is no-express-grant or absent, no customer patent grant is created by this License, without prejudice to exhaustion and Independent Patent Permissions.
+
+7. INDEPENDENT AND OVERLAPPING RIGHTS
+
+7.1 No narrowing of independent grants.
+
+This License does not revoke, narrow, condition or supersede any Independent Patent Permission that exists on its own terms. In particular, an existing permission under another open-source, open-hardware, standards, commercial, statutory or negotiated patent arrangement remains governed by its own source and termination rules.
+
+7.2 Multiple licensors.
+
+A Patent Licensor can grant or terminate only rights it has authority to control. Action by one Patent Licensor under one PatentGrantBundle does not terminate a grant made by another patent owner or another independent grant by the same owner unless that other grant itself provides for such a result.
+
+7.3 No election against broader rights.
+
+Reliance on this License does not require You to surrender a broader Independent Patent Permission. If another permission independently authorizes an act after an ECL-PL permission terminates, this License does not purport to prohibit that act.
+
+8. OPTIONAL ECL POLICY COMPOSITION
+
+8.1 No implicit ECL effect.
+
+An ECL Bundle, ECL licence, ECL Schedule, Restricted Party designation, Restricted Project designation or other ECL state has no patent-law effect under this License unless the exact PatentGrantManifest contains an immutable ecl_bundle_reference whose purpose is normative and whose patent_specific_effect expressly defines the patent consequence, trigger and affected rights.
+
+8.2 Provenance-only references.
+
+If ecl_bundle_reference.purpose is provenance-only, the reference has no effect on the existence, scope, suspension or termination of patent rights under this License.
+
+8.3 Exact immutable policy only.
+
+A normative ECL reference applies only to the exact referenced ECL Bundle and exact policy item identified by the PatentGrantManifest. A later ECL release, later Schedule, mutable channel, branch, registry view or changed classification cannot alter an existing PatentGrantBundle.
+
+8.4 Patent-specific consequence.
+
+Where a normative ECL reference is present, only the exact consequence selected in patent_specific_effect may operate: withholding or conditioning an initial grant, or terminating, suspending or limiting specified existing rights. The trigger and affected_rights fields must be applied narrowly to their exact identified scope. No broader copyright consequence, ECL remedy or repository state is imported by implication.
+
+8.5 Mandatory-law and prior-commitment limit.
+
+An ECL-referenced patent restriction operates only to the extent permitted by applicable patent law, competition law, exhaustion doctrine, non-waivable law and any prior standards, FRAND/RAND, patent-pool, covenant or other commitment binding the Patent Licensor. This License does not authorize discrimination or field-of-use restrictions that the Patent Licensor is legally prohibited from imposing.
+
+9. DEFENSIVE TERMINATION
+
+9.1 No default retaliation.
+
+If defensive_termination is absent or its profile is none, this License creates no patent-retaliation termination right.
+
+9.2 Narrow Covered Implementation profile.
+
+If defensive_termination.profile is narrow-covered-implementation, Your ECL-PL patent permission under this PatentGrantBundle terminates only if You initiate a judicial or administrative patent-infringement proceeding in which You affirmatively allege that the exact Covered Implementation, as such and within its manifest-defined boundary, infringes a patent claim that You own, control, or are authorized to assert.
+
+For this profile, merely giving technical notice, requesting licensing discussions, defending an action, asserting a compulsory counterclaim or cross-claim, responding to a proceeding initiated by another party, seeking a declaration of non-infringement in response to a concrete threat, challenging validity or enforceability, participating in an administrative validity proceeding, or enforcing this License does not by itself trigger termination.
+
+9.3 Custom profile.
+
+If defensive_termination.profile is custom, termination applies only to the exact trigger event, conduct, target scope, exclusions and cure treatment stated by the PatentGrantManifest. Free-form references to unspecified external terms do not expand the trigger.
+
+9.4 Scope of termination.
+
+Defensive termination under this Section affects only the patent permission granted to the triggering Patent Licensee by the identified Patent Licensor under the exact PatentGrantBundle and only to the scope expressly selected by the applicable profile. It does not terminate another licensor's grant, another independent licence, statutory permission, exhaustion, or rights already beyond the Patent Licensor's control.
+
+9.5 Cure and withdrawal.
+
+If defensive_termination.cure_or_withdrawal is available, the triggering Patent Licensee may cure by fully withdrawing or dismissing the triggering assertion within thirty days after receiving authenticated written notice from the Patent Licensor, provided no final merits judgment on the triggering assertion has been entered and the Patent Licensee does not refile or materially continue the same assertion through a controlled proxy. Reinstatement is prospective from completion of cure unless applicable law requires another result.
+
+If cure_or_withdrawal is unavailable or absent, this License creates no contractual cure right.
+
+A cure_or_withdrawal value of conditional is not supported by Version 1.0.0-draft.1 for the reason stated in Section 6.1.
+
+9.6 Downstream survival.
+
+Termination of a Patent Licensee does not automatically terminate a direct grant that the Patent Licensor independently made to another recipient. A valid Sublicense granted before termination survives only to the extent the PatentGrantManifest and applicable law support that survival; no survival rule may recreate rights that were never granted. Exhaustion and Independent Patent Permissions are unaffected by this Section.
+
+10. TRANSFER, ACQUISITION AND SUCCESSORS
+
+10.1 Patent transfers do not rewrite the bundle.
+
+Assignment, acquisition, exclusive licensing or other transfer of a patent after the PatentGrantBundle becomes operative does not change the immutable grant scope recorded by that bundle. The legal effect of the pre-existing grant against a successor in title is determined by applicable law and any binding transaction terms.
+
+10.2 No deliberate defeat.
+
+To the extent enforceable as a contractual obligation, the Patent Licensor must not knowingly structure a later transfer for the principal purpose of defeating patent permissions already granted under an operative PatentGrantBundle. This clause does not represent that every successor is automatically bound in every jurisdiction.
+
+10.3 Licensee acquisitions and divestitures.
+
+A change of control of a Patent Licensee does not automatically enlarge the Covered Implementation, Covered Patent Claim set or downstream classes. Affiliate treatment remains governed by Section 6.8 and the exact PatentGrantManifest.
+
+10.4 Acquired portfolios.
+
+A patent portfolio acquired by the Patent Licensor after the effective time enters the grant only as permitted by Section 4.5. No acquisition causes retroactive expansion.
+
+11. NO IMPLIED RIGHTS
+
+11.1 Express patent permission only.
+
+Except for the express patent permission created by an operative PatentGrantBundle under this License, no patent licence, covenant, estoppel, trademark licence, copyright licence, trade-secret licence, design-right licence or other intellectual-property right is granted by this License.
+
+11.2 ECL remains separate.
+
+This License does not grant copyright or software rights under ECL. ECL does not grant patent rights under this License. A project may use one instrument, both instruments, or neither, subject to its actual rights and obligations.
+
+11.3 No portfolio implication.
+
+The existence of one PatentGrantBundle does not imply permission under patents, claims, products, implementations, combinations or later versions outside its exact scope.
+
+12. PATENT STATUS, TITLE AND NON-INFRINGEMENT
+
+12.1 No validity or infringement warranty.
+
+Except for an express representation actually stated in the PatentGrantManifest, neither this License nor repository publication represents or warrants that a listed patent or claim is valid, enforceable, unexpired, essential, infringed, necessarily infringed, free from prior rights, or sufficient to practice the Covered Implementation.
+
+12.2 Authority representation not self-proving.
+
+The Patent Licensor's authority representation is a grant-specific assertion subject to the retained evidence and legal-review gates. It is not converted into conclusive title merely because the PatentGrantBundle validates technically.
+
+12.3 Known patents and encumbrances are not exhaustive unless expressly made normative.
+
+Provenance records describe the reviewed record at the relevant time. Omission of a patent, application, encumbrance or third-party right does not create ownership, negate another person's rights, or by itself expand the grant.
+
+12.4 No non-infringement assurance.
+
+The Patent Licensor does not, merely by making this grant, represent that practicing the Covered Implementation avoids patents or other rights owned by third parties.
+
+13. DISCLAIMER AND LIMITATION
+
+13.1 Patent permission as-is.
+
+To the maximum extent permitted by applicable law, the patent permission and associated provenance are provided without warranties beyond any express, non-excludable representation in the PatentGrantManifest or a separate signed agreement.
+
+13.2 Mandatory liability preserved.
+
+Nothing in this License excludes liability that applicable law does not permit a party to exclude or limit. This Section must not be interpreted to erase an express fraudulent statement, mandatory consumer protection, or other non-waivable obligation.
+
+14. COMPETITION LAW, STANDARDS COMMITMENTS AND MANDATORY LAW
+
+14.1 Competition law.
+
+No provision of this License authorizes a restriction that applicable competition or antitrust law prohibits. A field-of-use, customer, territory, eligibility, restricted-party, restricted-project, non-challenge, output, price, allocation or other restriction must be assessed under the law applicable to the actual agreement and market circumstances. Availability of this public draft or the absence of a royalty does not itself establish competition-law compliance.
+
+14.2 Standards and FRAND/RAND commitments.
+
+This License does not narrow a standards-body, FRAND/RAND, patent-pool, covenant or other prior commitment that independently binds the Patent Licensor. If such a commitment requires broader, non-discriminatory or differently conditioned access, this License does not authorize the Patent Licensor to contract around that obligation merely by using an ECL-PL policy.
+
+14.3 Non-challenge rights.
+
+Nothing in this License prohibits a Patent Licensee from contesting patent validity or enforceability unless an exact custom provision is separately lawful, expressly supported by the PatentGrantManifest and compatible with the stable PatentLicenseRelease. Version 1.0.0-draft.1 contains no general non-challenge obligation.
+
+14.4 Mandatory law controls.
+
+If a provision is invalid, prohibited or unenforceable under applicable mandatory law, it is limited or disregarded only to the minimum extent required, without using that limitation to expand the patent grant beyond the Patent Licensor's actual authority.
+
+15. TERMINATION CONSEQUENCES AND SURVIVAL
+
+15.1 No generalized termination.
+
+Patent rights under this License terminate only through a termination mechanism expressly supported by this License and selected by the PatentGrantManifest, or through another legally effective event outside this License. Repository deletion, branch changes, later licence versions, later ECL Bundles, maintainer decisions, or changed provenance do not themselves terminate an existing grant.
+
+15.2 Scope-limited effect.
+
+Termination affects only the rights and parties within the exact termination rule. It does not invalidate lawful acts completed before termination, reverse exhaustion, terminate Independent Patent Permissions, or create retroactive infringement where applicable law would not do so.
+
+15.3 Previously authorized articles and inventory.
+
+The treatment of post-termination inventory, repair, resale, use and downstream articles remains subject to applicable exhaustion law, the scope of any surviving direct grant or Sublicense, and other Independent Patent Permissions. This License does not impose a fictional continuing patent right where applicable law has exhausted it.
+
+15.4 Clauses that continue by nature.
+
+Sections concerning definitions needed to interpret prior acts, Independent Patent Permissions, exhaustion, no implied rights, patent-status disclaimers, mandatory law, interpretation of termination, and immutable historical scope continue to apply to the extent necessary to determine the legal effect of acts and grants that occurred before termination.
+
+16. LICENSOR ASSENT, LICENSEE RELIANCE AND INTERPRETATION
+
+16.1 Patent Licensor assent.
+
+The Patent Licensor's authenticated approval or adoption of the exact PatentGrantBundle is a necessary condition to creation of a grant under this License. Approval of another manifest, another bundle hash, another PatentLicenseRelease, a mutable branch, or substantially similar text is not approval of this bundle.
+
+16.2 Licensee reliance.
+
+A person may rely on the patent permission only to the extent that person is within the recipient class and grant conditions of the exact operative PatentGrantBundle. Whether additional contractual obligations require separate acceptance is determined by applicable law; absence of contract formation does not expand the scope of the patent permission stated by the Patent Licensor.
+
+16.3 No adverse inference from non-use.
+
+A person's decision not to rely on this License does not admit infringement, validity, enforceability, ownership, or need for a patent licence.
+
+16.4 Immutable release construction.
+
+The legal terms applicable to an operative PatentGrantBundle are the exact PatentLicenseRelease bytes bound into that bundle, not a later revision carrying a similar name or version family. Later ECL-PL releases do not amend earlier grants unless an independently effective legal act expressly does so.
+
+16.5 Grant-specific manifest controls selections, not meanings.
+
+Where this License gives the PatentGrantManifest a closed choice among defined grant models, the manifest selects the choice and supplies required grant-specific facts. The manifest does not silently redefine terms in this License. If a manifest selection is internally inconsistent, unresolved, unsupported by this PatentLicenseRelease, or beyond the Patent Licensor's authority, the inconsistency is resolved against creation of additional patent rights and, where required by the release architecture, prevents operativeness.
+
+END OF ECL PATENT LICENSE 1.0.0-draft.1
+
+NON-OPERATIVE DRAFT — REQUIRES QUALIFIED PATENT-LAW, COMPETITION-LAW AND JURISDICTION-SPECIFIC REVIEW BEFORE ANY STABLE RELEASE.
