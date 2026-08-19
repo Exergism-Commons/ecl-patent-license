@@ -36,20 +36,20 @@ For reviewed public URIs, validation examines both the exact raw URI and each pe
 
 `patent_licensor.name` is a public display name, not an identifier transport. The root schema rejects digits, control characters, identifier-like delimiters and common government-identifier labels in that field.
 
-`identity_reference.jurisdiction` MUST use exactly `ISO3166-1:<AA>` or `ISO3166-2:<AA-SUBDIVISION>` and MUST be verified against authenticated immutable ISO evidence as defined in section 4. A live lookup against whatever registry state happens to exist at validation time is not sufficient.
+`identity_reference.jurisdiction` MUST use exactly `ISO3166-1:<AA>` or `ISO3166-2:<AA-SUBDIVISION>` and MUST be verified against authenticated immutable ISO evidence as defined in section 4. A live lookup against whatever ISO registry state happens to exist at validation time is not sufficient.
 
 Every manifest value copied into the retained identity attestation MUST first pass its schema/profile grammar and the whole-manifest privacy traversal above. No free-form manifest string may be copied into an attestation field unless the profile explicitly identifies that field and its grammar.
 
 These checks are in addition to the existing opaque-token, fixed media-type, content-addressed path and no-`record_uri` requirements.
 
-### 1.4 Whole-package traversal
+### 1.4 Whole-package traversal and metadata-free container profile
 
-The privacy boundary is the **entire physical PatentGrantBundle**, not merely the PatentGrantManifest or transitive evidence closure. Before a bundle for an individual can be marked operative, tooling MUST privacy-review the exact bytes and container metadata of:
+The privacy boundary is the **entire physical PatentGrantBundle**, not merely the PatentGrantManifest or transitive evidence closure. Before a bundle for an individual can be marked operative, tooling MUST privacy-review the exact bytes of:
 
 - `BUNDLE-INDEX` itself;
 - the fixed member `license/PATENT-LICENSE`;
 - the fixed member `manifest/patent-grant.json`; and
-- every evidence member in the transitive closure defined in section 4.4.
+- every evidence member in the transitive evidence closure defined in section 4.6.
 
 No member is exempt because it is fixed, normative legal text, generated metadata, or outside the evidence namespace.
 
@@ -63,9 +63,17 @@ Accepted decoding rules are fail-closed:
 - JCS identity attestations and ECL-PL registry/snapshot records are inspected under their fixed profiles plus the same credential-exclusion rule.
 - PDF, `application/octet-stream`, images, compressed containers, office formats, or any other format with metadata or embedded payloads are **not privacy-auditable by default**. They are rejected for an individual bundle unless this reviewed security profile names an exact deterministic decoder/extractor profile that exposes all textual metadata, embedded objects and alternate streams relevant to privacy inspection. No such permissive binary profile exists in this draft.
 
-Container metadata such as archive comments, member extra fields, extended attributes, filenames outside the canonical member path, MIME parameters, alternate streams and implementation-specific metadata is either forbidden by the package profile or must be exposed to the same credential-exclusion traversal. Hidden or uninspectable metadata causes rejection.
+For an individual bundle, the only conforming physical-container policy is `urn:ecl-pl:container-profile:metadata-free-v1`. Under that profile, **all optional, free-form or externally supplied container metadata is forbidden rather than merely reviewed**. A conforming reader MUST reject, before member hashing:
 
-The privacy-review record MUST bind the exact PatentGrantBundle identity, exact `BUNDLE-INDEX` SHA-256, exact manifest SHA-256, **every physical member path and digest**, the decoder/profile used for each member, the validator/reviewer identity and the result. A review of different bytes or an incomplete physical member set is irrelevant.
+- archive/global comments, per-entry comments and arbitrary preambles/postambles;
+- optional/unknown extra fields, application-specific headers or user-controlled extension records;
+- extended attributes, resource forks, alternate streams and filesystem ACL/comment metadata;
+- owner/group names, user-controlled path aliases, arbitrary MIME parameters and implementation-specific labels; and
+- timestamps, IDs or other container fields that are not either fixed by this profile or deterministically derived solely from canonical member path, regular-file type, exact member length and exact member bytes.
+
+Format-mandated structural fields such as byte lengths, offsets, checksums and compression framing are permitted only when their semantics are fully determined by the container format and they cannot carry arbitrary payload text. If a container API cannot prove absence of every forbidden metadata channel, validation fails closed.
+
+A privacy-review record MUST bind `container_profile_id = urn:ecl-pl:container-profile:metadata-free-v1`, the exact PatentGrantBundle identity, exact `BUNDLE-INDEX` SHA-256, exact manifest SHA-256, **every physical member path and digest**, the decoder/profile used for each member, the validator/reviewer identity and the result. If the bundle is distributed as one serialized archive/container, the record MUST additionally bind the SHA-256 of those exact outer-container bytes. Repackaging produces a different physical package instance and requires a new privacy review; an earlier record is not transferable merely because `BUNDLE-INDEX` and member digests are unchanged.
 
 ## 2. Strict Ed25519 verification profile
 
@@ -116,7 +124,7 @@ If the container format or API does not let the validator distinguish regular da
 
 ## 4. Authenticated immutable ISO 3166 jurisdiction evidence
 
-Jurisdiction validation for an individual MUST NOT depend on mutable live ISO registry state, mutable validator configuration, implementation-local parser choice or self-authenticated retained bytes.
+Jurisdiction validation for an individual MUST NOT depend on mutable live ISO registry state, mutable validator configuration, implementation-local parser choice, implementation-local signature semantics or self-authenticated retained bytes.
 
 ### 4.1 Attestation member
 
@@ -137,6 +145,12 @@ signature_sha256
 trust_registry_version
 trust_registry_bundle_path
 trust_registry_sha256
+signature_registry_version
+signature_registry_bundle_path
+signature_registry_sha256
+signature_profile_id
+signature_profile_bundle_path
+signature_profile_sha256
 parser_registry_version
 parser_registry_bundle_path
 parser_registry_sha256
@@ -153,42 +167,65 @@ Requirements:
 - `edition_id` is a nonempty immutable edition/snapshot identifier and MUST NOT be `latest`, `current`, a mutable URL or another moving label;
 - `jurisdiction_code` is exactly the manifest `identity_reference.jurisdiction`;
 - `trust_registry_version` is exactly `ecl-pl-iso3166-trust-registry-v1`;
+- `signature_registry_version` is exactly `ecl-pl-iso3166-signature-registry-v1`;
 - `parser_registry_version` is exactly `ecl-pl-iso3166-parser-registry-v1`;
+- `signature_profile_id` is the immutable ID of the exact signature-verification profile selected by the retained signature registry and trust-anchor/edition rule;
 - `parser_profile_id` is the immutable ID of the exact parser profile selected by the retained parser registry and trust-anchor/edition rule;
 - every `*_bundle_path` is content-addressed as `evidence/identity/sha256/<64 lowercase hex>` and its terminal digest equals the corresponding SHA-256 field and recomputed exact member digest;
-- `snapshot_bundle_path` identifies the normalized ECL-PL resolution record described in section 4.3;
+- `snapshot_bundle_path` identifies the normalized ECL-PL resolution record described in section 4.5;
 - `source_artifact_bundle_path` identifies the exact ISO-issued source artifact whose contents support that resolution record;
 - `signature_bundle_path` identifies the exact ISO-issued detached signature, signed manifest, or equivalent cryptographic authentication artifact for `source_artifact_bundle_path`;
 - `trust_registry_bundle_path` identifies the exact trust-registry bytes used for this release;
+- `signature_registry_bundle_path` identifies the exact closed signature-registry bytes used for this release;
+- `signature_profile_bundle_path` identifies the exact signature-verification profile bytes used to authenticate the source artifact;
 - `parser_registry_bundle_path` identifies the exact closed parser-registry bytes used for this release;
 - `parser_profile_bundle_path` identifies the exact parser-profile bytes used to derive the resolution record;
 - `trust_anchor_fingerprint` identifies one exact active anchor in the retained trust-registry bytes; and
 - `media_type` is exactly `application/ecl-pl-iso3166-snapshot+json`.
 
-The existing signed identity-attestation `issued_at` timestamp is the **sole trust-anchor validity evaluation instant** for this profile. `valid_from`/`valid_until` in the retained trust registry are evaluated against that exact immutable instant; current wall-clock time, revalidation time and repository modification time MUST NOT affect the result.
+The existing signed identity-attestation `verified_at` timestamp is the **sole trust-anchor validity evaluation instant** for this profile. `valid_from`/`valid_until` in the retained trust registry are evaluated against that exact immutable signed instant; current wall-clock time, revalidation time and repository modification time MUST NOT affect the result.
 
 ### 4.2 Immutable trust-registry input
 
 A source artifact is accepted only when its cryptographic authentication verifies to a trust anchor listed in the **exact retained trust-registry member** identified by `trust_registry_bundle_path`/`trust_registry_sha256`.
 
-At initial release, those retained registry bytes MUST be byte-for-byte identical to the exact reviewed `spec/ISO3166-TRUST-REGISTRY.json` input selected by the release gate. The release record MUST bind the exact registry version, SHA-256 and attestation `issued_at` validity instant. Later revalidation MUST use the retained bytes; a newer repository registry, a mutable `main` copy or ambient validator configuration cannot replace them.
+At initial release, those retained registry bytes MUST be byte-for-byte identical to the exact reviewed `spec/ISO3166-TRUST-REGISTRY.json` input selected by the release gate. The release record MUST bind the exact registry version, SHA-256 and signed attestation `verified_at` validity instant. Later revalidation MUST use the retained bytes; a newer repository registry, a mutable `main` copy or ambient validator configuration cannot replace them.
 
 The registry itself is not allowed to bootstrap trust by assertion. An anchor entry may be added only when review evidence establishes that the pinned public key/certificate is issued or controlled by ISO for authenticating the relevant ISO 3166 publication artifact. Each active anchor/edition rule MUST pin exact key/certificate bytes by SHA-256 and bind at least:
 
-- signature profile;
 - `valid_from` and `valid_until`;
 - authentication purpose;
 - source media type;
-- immutable edition scope; and
+- immutable edition scope;
+- exact `signature_profile_id` and `signature_profile_sha256`; and
 - exact `parser_profile_id` and `parser_profile_sha256`.
 
-Anchor status, purpose, validity, signature profile and parser binding are read only from the retained trust-registry bytes. The signed attestation `issued_at` instant MUST fall within the retained anchor validity interval. Missing, revoked/inactive, ambiguous or multiply matching entries fail closed.
+Anchor status, purpose, validity and profile bindings are read only from the retained trust-registry bytes. The signed attestation `verified_at` instant MUST fall within the retained anchor validity interval. Missing, revoked/inactive, ambiguous or multiply matching entries fail closed.
 
 **Current fail-closed state:** the architecture-stage trust registry intentionally contains zero anchors. Therefore no individual PatentGrantBundle can currently satisfy this ISO-authentication gate or become operative. HTTPS delivery from `iso.org`, an unsigned ISO-looking file, a repository maintainer signature, an ECL-PL reviewer statement or self-described edition metadata is not a substitute for ISO-origin cryptographic authentication.
 
-When an anchor is eventually configured, validation MUST verify the exact signature/authentication artifact over the exact retained source-artifact bytes, verify the key/chain against the retained pinned anchor and purpose at the immutable `issued_at` instant, and bind the authenticated source artifact to the signed `edition_id`. A mismatch or unsupported signature profile fails closed.
+### 4.3 Closed content-addressed signature-verification input
 
-### 4.3 Closed content-addressed parser input
+A validator MUST NOT select signature/certificate verification semantics by crypto-library behavior, implementation name, package version, mutable URL, repository `main`, media-type heuristic or any other ambient mechanism.
+
+The exact retained signature-registry member identified by `signature_registry_bundle_path`/`signature_registry_sha256` MUST be byte-for-byte identical, at initial release, to the exact reviewed `spec/ISO3166-SIGNATURE-REGISTRY.json` input selected by the release gate. The release record MUST bind its exact version and SHA-256. Later validation uses only the retained registry bytes.
+
+The signature registry is a closed allowlist. A signature-verification profile is usable only if:
+
+1. the retained signature registry contains exactly one entry for `signature_profile_id` and `signature_profile_sha256`;
+2. the retained `signature_profile_bundle_path` bytes hash exactly to `signature_profile_sha256`;
+3. the active retained trust-anchor/edition rule independently names the same signature-profile ID/hash for the exact source/authentication media types and edition scope; and
+4. the profile is complete under `ecl-pl-iso3166-signature-registry-v1`, including exact key/certificate byte grammar, certificate/container parsing, critical-extension handling, signature encoding, exact signed-byte selection, digest algorithm, signature primitive and parameters, deterministic verification procedure, chain/direct-key trust procedure, malformed/noncanonical/weak-input rejection, and `external_lookups: forbidden`.
+
+A profile MUST define one deterministic acceptance condition. It may not delegate normative acceptance semantics to “library defaults”, platform certificate policy, current system trust stores, permissive BER/DER variants, unspecified padding, unspecified elliptic-curve point handling, or an implementation-specific compatibility mode. If the selected implementation cannot prove every required canonical-parsing and cryptographic check, validation fails closed.
+
+The exact signature-profile bytes, not a library version, control conformance. Implementation identity/version is recorded only for audit/debugging and cannot expand the accepted input set.
+
+**Current fail-closed state:** `spec/ISO3166-SIGNATURE-REGISTRY.json` intentionally contains zero signature-verification profiles. Therefore no individual PatentGrantBundle can currently authenticate ISO source evidence, even if a trust anchor were added independently.
+
+When a profile and anchor eventually exist, validation MUST verify the exact retained authentication artifact over the exact retained source-artifact bytes using only the retained profile semantics and retained pinned anchor at the signed `verified_at` instant. Any mismatch or unsupported profile fails closed.
+
+### 4.4 Closed content-addressed parser input
 
 A validator MUST NOT select a parser by implementation name, local configuration, package version, mutable URL, repository `main`, media-type heuristic or any other ambient mechanism.
 
@@ -203,7 +240,9 @@ The parser registry is a closed allowlist. A parser profile is usable only if:
 
 No prose-only parser description or locally implemented interpretation is sufficient. If the retained parser registry has no matching profile, contains conflicting entries, or the exact profile cannot deterministically parse the authenticated source bytes, validation fails closed.
 
-**Current fail-closed state:** `spec/ISO3166-PARSER-REGISTRY.json` intentionally contains zero parser profiles. Therefore no individual PatentGrantBundle can currently pass jurisdiction resolution, even if a trust anchor were added independently.
+**Current fail-closed state:** `spec/ISO3166-PARSER-REGISTRY.json` intentionally contains zero parser profiles. Therefore no individual PatentGrantBundle can currently pass jurisdiction resolution, even if a trust anchor and signature profile were added independently.
+
+### 4.5 Exact resolution record
 
 The normalized ECL-PL ISO resolution record at `snapshot_bundle_path` is strict UTF-8 JSON with no BOM and contains exactly:
 
@@ -236,7 +275,7 @@ where:
 
 No additional members are permitted. The resolution record MUST be recomputed from the exact authenticated source bytes using the exact retained parser profile and must match byte-for-byte after canonical serialization; a hand-authored mapping cannot substitute for deterministic derivation.
 
-### 4.4 Transitive evidence closure
+### 4.6 Transitive evidence closure
 
 For the fixed individual profile, **“manifest-referenced evidence” means the transitive closure of content-addressed evidence references beginning at the PatentGrantManifest**.
 
@@ -254,7 +293,7 @@ The operative rule is instead:
 5. require **every and only** member in that transitive closure to appear exactly once in `BUNDLE-INDEX` and exactly once as a physical regular-file member; and
 6. reject any indexed evidence member outside the closure.
 
-For the current individual identity profile, the manifest directly references the signed identity attestation. That attestation transitively references the normalized ISO resolution record, exact ISO-issued source artifact, exact authentication artifact, exact trust-registry bytes, exact parser-registry bytes and exact parser-profile bytes. Thus the identity path consists of **seven content-addressed evidence members including the attestation itself**, and all seven participate in the canonical bundle identity.
+For the current individual identity profile, the manifest directly references the signed identity attestation. That attestation transitively references the normalized ISO resolution record, exact ISO-issued source artifact, exact authentication artifact, exact trust-registry bytes, exact signature-registry bytes, exact signature-verification profile bytes, exact parser-registry bytes and exact parser-profile bytes. Thus the identity path consists of **nine content-addressed evidence members including the attestation itself**, and all nine participate in the canonical bundle identity.
 
 Validation hashes every exact member and requires equality among path digest, declared digest, index digest and recomputed digest at every edge.
 
@@ -265,14 +304,17 @@ These checks run before a bundle may be marked operative. Passing JSON Schema va
 For an individual bundle, the release record MUST bind at least:
 
 - exact PatentGrantBundle identity;
+- `container_profile_id = urn:ecl-pl:container-profile:metadata-free-v1` and, when distributed as one serialized container, its exact SHA-256;
 - exact `BUNDLE-INDEX` and manifest SHA-256 values;
-- identity-attestation `issued_at` trust-evaluation instant;
+- signed identity-attestation `verified_at` trust-evaluation instant;
 - trust-registry version and SHA-256;
+- signature-registry version and SHA-256;
+- signature-profile ID and SHA-256;
 - parser-registry version and SHA-256;
 - parser-profile ID and SHA-256;
 - trust-anchor fingerprint; and
 - validator/cryptographic implementation identities and versions.
 
-The exact trust-registry, parser-registry and parser-profile bytes are retained in the bundle through section 4.4, so revalidation does not depend on a mutable repository or ambient local configuration.
+The exact trust-registry, signature-registry, signature-profile, parser-registry and parser-profile bytes are retained in the bundle through section 4.6, so revalidation does not depend on a mutable repository, ambient trust store, library-default cryptographic policy or ambient local parser configuration.
 
-Any ambiguity in privacy classification, fixed-member decoding, retained-evidence decoding, percent-decoding, point decoding, package entry type, transitive evidence closure, trust-registry identity, ISO trust-anchor provenance, validity instant, signature authentication, parser-registry identity, parser-profile identity, source parsing, registry snapshot identity or jurisdiction resolution fails closed.
+Any ambiguity in privacy classification, forbidden container metadata, fixed-member decoding, retained-evidence decoding, percent-decoding, point decoding, package entry type, transitive evidence closure, trust-registry identity, ISO trust-anchor provenance, `verified_at` validity instant, signature-registry identity, signature-profile identity, signature/certificate parsing, cryptographic verification, parser-registry identity, parser-profile identity, source parsing, registry snapshot identity or jurisdiction resolution fails closed.
