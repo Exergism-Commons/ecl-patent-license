@@ -126,7 +126,7 @@ Because the manifest does not name an initial Patent Licensee, `draft.1` does no
 
 Every qualifying person receives its grant directly from the Patent Licensor. This also makes termination recipient-specific: termination of A does not collapse B's independently qualifying direct grant.
 
-A person already maintaining a proceeding that would satisfy the fixed narrow defensive trigger does not acquire the direct grant while that proceeding remains pending. Otherwise a claimant could file before adoption of the bundle, wait for the public grant to become available, and continue the same offensive case without any new triggering act.
+The public-direct model does **not** mean that a terminated recipient can immediately re-enter under the same bundle while continuing the same covered offensive assertion. A still-pending assertion with the required historical narrow-profile nexus blocks both first acquisition and later reacquisition. The bar survives the end of current direction/control over a proxy and applies to qualifying initiation, maintenance, direction, control, knowing causation, and purpose-built transfers used to bring or maintain the assertion. Once the covered assertion ceases to remain pending, acquisition or reacquisition can occur only prospectively if every other condition is satisfied.
 
 ### D7 — Sublicensing is not supported in v1 draft.1
 
@@ -167,7 +167,7 @@ That distinction must be machine-resolvable, not inferred from prose.
 
 The fixed profile covers an affirmative patent-infringement proceeding directed at the exact Covered Implementation when the Patent Licensee directly or indirectly initiates, maintains, directs, controls or knowingly causes the assertion. The operative claimant limb uses the same causation/control concepts, so a knowingly caused assertion cannot escape merely because the proxy is not formally acting “on behalf of” the Patent Licensee.
 
-A covered proceeding already pending before the person would first acquire the public direct grant prevents initial acquisition while that proceeding remains pending. Once it is fully withdrawn, dismissed or otherwise ceases to satisfy the trigger, the person may qualify prospectively if every other condition is met.
+The same conduct list applies to the historical acquisition/reacquisition gate. A still-pending covered assertion blocks permission where the person previously initiated, **maintained**, directed, controlled, knowingly caused, or purpose-built-transfer enabled its bringing **or maintenance**. This applies both before first acquisition and after a prior ECL-PL permission has terminated, so the public-direct grant cannot automatically spring back while the same triggering assertion continues.
 
 The proxy limb is deliberately bounded. Passive investment, an arm's-length patent transfer without an assertion purpose, ordinary legal funding without direction/control or knowing causation, and an unrelated Affiliate assertion do not automatically trigger termination.
 
@@ -201,6 +201,8 @@ When cure is `available`, the trigger does not terminate the grant immediately. 
 If the assertion is fully withdrawn/dismissed within that period, termination never becomes effective and Covered Acts during the cure period remain licensed. If the Patent Licensor delays notice, termination is correspondingly delayed; the delay does not manufacture retroactive infringement exposure.
 
 The notice must be verifiably attributable to the Patent Licensor or an authorized representative through an authentication method at least as strong as, or cryptographically traceable to, the bundle's licensor-approval identity mechanism.
+
+If cure fails and termination becomes effective, the public-direct nature of the grant does not independently restore permission while that same covered assertion remains pending; reacquisition is governed by Sections 3.1 and 9.2. A timely cure that prevents termination from ever becoming effective is not treated as a termination/reacquisition event.
 
 ### D14 — Exhaustion and independent grants cannot be clawed back
 
@@ -254,7 +256,7 @@ Also distinguish ECL-PL authorization from an independent authorization that may
 
 Review whether the fixed trigger is still too narrow because it excludes pre-suit demands, some ITC/import proceedings or certain indirect-infringement assertions, and whether the bounded proxy rule catches deliberate assertion-entity routing without capturing legitimate arm's-length transfers, financing or defensive conduct.
 
-Review the initial-eligibility treatment of proceedings already pending when a recipient would otherwise acquire the grant, including what counts as “maintaining” a proceeding and when a proceeding has ceased to satisfy the trigger.
+Review both acquisition and **reacquisition** treatment of a covered proceeding that remains pending. The historical gate should match the post-grant trigger's initiation/maintenance/direction/control/knowing-causation and purpose-built bring/maintain transfer paths, while preserving the narrow proxy exclusions. Also test when a proceeding has ceased to remain pending sufficiently for prospective reacquisition.
 
 ### R7 — Cure period and authenticated notice
 
@@ -319,21 +321,23 @@ The first PR review should test at least:
 15. defensive counterclaim after Patent Licensor sues first — must not trigger fixed retaliation;
 16. Patent Licensee directs or knowingly causes an assertion entity to sue over the exact Covered Implementation — proxy path must trigger even if the proxy is not formally acting on the Licensee's behalf;
 17. unrelated Affiliate independently sues without Licensee direction/control/knowing causation — must not trigger solely by affiliation;
-18. offensive covered proceeding was filed before the person would first acquire ECL-PL and remains pending — person must not acquire the grant while maintaining it;
-19. pre-grant covered proceeding is withdrawn/dismissed — person may qualify only prospectively if all other conditions are met;
-20. cure available + withdrawal within thirty days of authenticated notice — termination never becomes effective and no interim unlicensed gap exists;
-21. delayed Patent Licensor notice — cure clock and termination are delayed rather than creating retroactive infringement exposure;
-22. offensive assertion against a modified product outside the exact Covered Implementation — must not trigger merely by similarity;
-23. existing Apache-2.0 patent permission remains independently usable after ECL-PL termination;
-24. authorized sale causes exhaustion before later ECL-PL termination — exhaustion is not reversed;
-25. exact ECL Bundle later receives a successor Schedule — old PatentGrantBundle does not mutate;
-26. unfavorable Exergism score with no exact operative ECL classification — no ECL-PL restriction;
-27. scoped ECL `S` classification — patent consequence must not expand outside the exact restricted capacity;
-28. ECL Independent Remediation Activity or exact Schedule exclusion — patent translation must preserve it;
-29. FRAND-encumbered SEP plus discriminatory ECL eligibility policy — specialist review required and policy may be unusable;
-30. covered patent is assigned after grant — immutable history remains, successor effect requires applicable-law analysis;
-31. ECL policy attempts `suspend-existing-rights` without an objectively resolvable restoration condition — must be ineligible for operativeness;
-32. recipient does not sign a bilateral contract but relies on the public patent permission — identify which conditions remain enforceable and on what legal theory.
+18. covered proceeding was initiated, maintained, directed, controlled, knowingly caused, or purpose-built-transfer enabled before first acquisition and remains pending — person must not acquire the grant even if the qualifying nexus later ceased;
+19. Patent Licensee triggers termination, permission terminates, and the same covered proceeding remains pending — public-direct eligibility must not immediately recreate the permission;
+20. a person purpose-transfers rights before acquisition to **maintain** an already-filed covered assertion — the historical gate must treat that maintenance path consistently with §9.2;
+21. covered proceeding ceases to remain pending — acquisition or reacquisition may occur only prospectively if all other conditions are met;
+22. cure available + withdrawal within thirty days of authenticated notice — termination never becomes effective and no reacquisition analysis is needed;
+23. delayed Patent Licensor notice — cure clock and termination are delayed rather than creating retroactive infringement exposure;
+24. offensive assertion against a modified product outside the exact Covered Implementation — must not trigger merely by similarity;
+25. existing Apache-2.0 patent permission remains independently usable after ECL-PL termination;
+26. authorized sale causes exhaustion before later ECL-PL termination — exhaustion is not reversed;
+27. exact ECL Bundle later receives a successor Schedule — old PatentGrantBundle does not mutate;
+28. unfavorable Exergism score with no exact operative ECL classification — no ECL-PL restriction;
+29. scoped ECL `S` classification — patent consequence must not expand outside the exact restricted capacity;
+30. ECL Independent Remediation Activity or exact Schedule exclusion — patent translation must preserve it;
+31. FRAND-encumbered SEP plus discriminatory ECL eligibility policy — specialist review required and policy may be unusable;
+32. covered patent is assigned after grant — immutable history remains, successor effect requires applicable-law analysis;
+33. ECL policy attempts `suspend-existing-rights` without an objectively resolvable restoration condition — must be ineligible for operativeness;
+34. recipient does not sign a bilateral contract but relies on the public patent permission — identify which conditions remain enforceable and on what legal theory.
 
 ## 9. Qualified review remains mandatory
 
