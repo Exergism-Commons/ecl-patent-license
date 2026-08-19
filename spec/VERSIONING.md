@@ -163,7 +163,8 @@ The immutable release/revalidation record MUST additionally bind the exact bytes
 - `spec/VERSIONING.md`;
 - `spec/SECURITY-PROFILE.md`;
 - `spec/CONTAINER-PROFILE.md`;
-- `schemas/schema-set.json` and every schema resource listed by it; and
+- `schemas/schema-set.json` and every schema resource listed by it;
+- any scheme-specific legal-entity identity resolver/mapping profile used by the release; and
 - `spec/COMPOSITION-WITH-ECL.md` when an operative ECL policy reference is present.
 
 A human-readable profile ID or a later file carrying the same profile ID is not permission to substitute changed semantics. Revalidation of an historical operative record uses the exact retained/content-addressed validation inputs bound to that record, not mutable repository `main`, local defaults or a later specification revision.
@@ -181,7 +182,7 @@ Expected workflow:
 6. Recompute all declared hashes and enforce the legal-core license/manifest-to-index equality invariants
 7. Resolve patent-publication identities and authoritative state
 8. Verify every retained evidence member against BUNDLE-INDEX and the applicable evidence closure
-9. Verify the Patent Licensor identity reference, pinned attestation profile, verifier key and retained attestation
+9. Verify the Patent Licensor identity reference and retained identity evidence; for individuals, additionally verify the pinned attestation profile, verifier key and retained attestation
 10. Resolve any exact ECL Bundle reference
 11. Complete grant-specific legal/policy review
 12. Construct canonical BUNDLE-INDEX and verify the closed member set
@@ -204,7 +205,7 @@ For every property key in `claim_scope.enumerated_claims` and `known_patents`, t
 5. verify `status` at `provenance.recorded_at`;
 6. resolve `evidence_snapshot.bundle_path` by literal canonical member-name equality in `BUNDLE-INDEX`;
 7. require that path to be exactly `evidence/patents/sha256/<digest>` and appear exactly once in the index;
-8. hash the exact retained member bytes and require the path digest, index digest and `evidence_snapshot.sha256` all to equal that recomputed digest;
+8. hash the exact retained member bytes and require the path digest, index digest and `evidence_snapshot.sha256` all to equal the recomputed digest;
 9. require those bytes to substantiate the same publication identity, kind and status; and
 10. fail closed on missing, ambiguous, contradictory, aliased or unavailable data.
 
