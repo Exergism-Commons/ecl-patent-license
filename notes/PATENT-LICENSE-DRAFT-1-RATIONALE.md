@@ -126,7 +126,7 @@ Because the manifest does not name an initial Patent Licensee, `draft.1` does no
 
 Every qualifying person receives its grant directly from the Patent Licensor. This also makes termination recipient-specific: termination of A does not collapse B's independently qualifying direct grant.
 
-The public-direct model does **not** mean that a terminated recipient can immediately re-enter under the same bundle while continuing the same covered offensive assertion. A still-pending assertion with the required historical narrow-profile nexus blocks both first acquisition and later reacquisition. The bar survives the end of current direction/control over a proxy and applies to qualifying initiation, maintenance, direction, control, knowing causation, and purpose-built transfers used to bring or maintain the assertion. Once the covered assertion ceases to remain pending, acquisition or reacquisition can occur only prospectively if every other condition is satisfied.
+The public-direct model does **not** mean that a terminated recipient can immediately re-enter under the same bundle while continuing the same covered offensive assertion. A still-pending assertion with the required historical narrow-profile nexus blocks both first acquisition and later reacquisition. The bar survives the end of current direction/control over a proxy and applies to qualifying initiation, maintenance, direction, control, knowing causation, purpose-built transfers, and purpose-built funding arrangements used to procure the bringing or maintenance of the specific assertion. Once the covered assertion ceases to remain pending, acquisition or reacquisition can occur only prospectively if every other condition is satisfied.
 
 ### D7 — Sublicensing is not supported in v1 draft.1
 
@@ -165,11 +165,11 @@ That distinction must be machine-resolvable, not inferred from prose.
 
 ### D10 — Fixed narrow defensive termination includes pending and tightly bounded proxy assertions
 
-The fixed profile covers an affirmative patent-infringement proceeding directed at the exact Covered Implementation when the Patent Licensee directly or indirectly initiates, maintains, directs, controls or knowingly causes the assertion **or purpose-built transfers/assigns patent or assertion-control rights principally to enable the bringing or maintenance of that covered assertion**. A consummated purpose-built transfer path does not require the transferor to retain continuing control after the transfer if the contemplated covered proceeding is in fact brought or maintained.
+The fixed profile covers an affirmative patent-infringement proceeding directed at the exact Covered Implementation when the Patent Licensee directly or indirectly initiates, maintains, directs, controls or knowingly causes the assertion, **purpose-built transfers/assigns patent or assertion-control rights principally to enable the bringing or maintenance of that covered assertion**, or **funds under an arrangement whose principal purpose is procuring the bringing or maintenance of that specific covered assertion**. A consummated purpose-built transfer or funding path does not require continuing control after the transfer/funding if the contemplated covered proceeding is in fact brought or maintained.
 
-The same conduct list applies to the historical acquisition/reacquisition gate. A still-pending covered assertion blocks permission where the person previously initiated, **maintained**, directed, controlled, knowingly caused, or purpose-built-transfer enabled its bringing **or maintenance**. This applies both before first acquisition and after a prior ECL-PL permission has terminated, so the public-direct grant cannot automatically spring back while the same triggering assertion continues.
+The same conduct list applies to the historical acquisition/reacquisition gate. A still-pending covered assertion blocks permission where the person previously initiated, **maintained**, directed, controlled, knowingly caused, purpose-built-transfer enabled, or purpose-built-funded its bringing **or maintenance**. This applies both before first acquisition and after a prior ECL-PL permission has terminated, so the public-direct grant cannot automatically spring back while the same triggering assertion continues.
 
-The proxy limb is deliberately bounded. Passive investment, an arm's-length patent transfer without an assertion purpose, and an unrelated Affiliate assertion do not automatically trigger termination. Ordinary non-controlling legal or litigation funding is also not, by itself, initiation, maintenance, direction, control, knowing causation or a purpose-built transfer. Mere knowledge that the funding facilitates or is necessary to the litigation is insufficient by itself. Funding can enter the trigger only when the funder materially directs/controls the covered assertion or the funding arrangement or a related act is principally intended to procure the bringing or maintenance of that specific assertion. The same funding boundary applies to the historical acquisition/reacquisition gate.
+The proxy limb is deliberately bounded. Passive investment, an arm's-length patent transfer without an assertion purpose, and an unrelated Affiliate assertion do not automatically trigger termination. Ordinary non-controlling legal or litigation funding is also not, by itself, initiation, maintenance, direction, control, knowing causation or a purpose-built funding trigger. Mere knowledge that the funding facilitates or is necessary to the litigation is insufficient by itself. The funding path enters the trigger only where material direction/control exists or the funding arrangement itself has the principal purpose of procuring the bringing or maintenance of that specific covered assertion. The same funding boundary applies to the historical acquisition/reacquisition gate.
 
 The profile still does not trigger merely because the Patent Licensee:
 
@@ -198,7 +198,7 @@ The schema permits custom-style subordinate fields to appear beside `narrow-cove
 
 When cure is `available`, the trigger does not terminate the grant immediately. The Patent Licensor must deliver authenticated notice identifying the exact bundle, proceeding and asserted trigger. The thirty-day window starts on receipt.
 
-If the assertion is fully withdrawn/dismissed within that period, termination never becomes effective and Covered Acts during the cure period remain licensed. If the Patent Licensor delays notice, termination is correspondingly delayed; the delay does not manufacture retroactive infringement exposure.
+If the triggering assertion is fully withdrawn/dismissed within that period, termination never becomes effective and Covered Acts during the cure period remain licensed. The withdrawal/dismissal can be performed by the Patent Licensee **or by the qualifying proxy claimant that actually brought or maintains the assertion**; cure is tied to cessation of the triggering assertion, not to formal control over the claimant. The Patent Licensee must not materially continue or procure continuation of the same assertion through another qualifying proxy. If the Patent Licensor delays notice, termination is correspondingly delayed; the delay does not manufacture retroactive infringement exposure.
 
 The notice must be verifiably attributable to the Patent Licensor or an authorized representative through an authentication method at least as strong as, or cryptographically traceable to, the bundle's licensor-approval identity mechanism.
 
@@ -256,13 +256,13 @@ Also distinguish ECL-PL authorization from an independent authorization that may
 
 Review whether the fixed trigger is still too narrow because it excludes pre-suit demands, some ITC/import proceedings or certain indirect-infringement assertions, and whether the bounded proxy rule catches deliberate assertion-entity routing without capturing legitimate arm's-length transfers, financing or defensive conduct.
 
-Review both acquisition and **reacquisition** treatment of a covered proceeding that remains pending. The historical gate should match the post-grant trigger's initiation/maintenance/direction/control/knowing-causation and purpose-built bring/maintain transfer paths, while preserving the narrow proxy exclusions. Also test when a proceeding has ceased to remain pending sufficiently for prospective reacquisition.
+Review both acquisition and **reacquisition** treatment of a covered proceeding that remains pending. The historical gate should match the post-grant trigger's initiation/maintenance/direction/control/knowing-causation, purpose-built transfer, and purpose-built funding paths, while preserving the narrow proxy exclusions. Also test when a proceeding has ceased to remain pending sufficiently for prospective reacquisition.
 
-Review the funding boundary specifically: mere non-controlling funding and knowledge that funds facilitate the case are intended to remain outside the fixed trigger, whereas material direction/control or a funding arrangement/related act principally intended to procure the specific covered assertion may enter it. Qualified counsel should test whether that distinction is objective and enforceable enough for stable v1.
+Review the funding boundary specifically: mere non-controlling funding and knowledge that funds facilitate the case are intended to remain outside the fixed trigger, whereas material direction/control or a funding arrangement principally intended to procure the specific covered assertion may enter it. Qualified counsel should test whether that distinction is objective and enforceable enough for stable v1.
 
 ### R7 — Cure period and authenticated notice
 
-Review whether cure should exist, whether dismissal must be with prejudice, whether material relief already obtained changes the result, whether thirty days is appropriate, and whether the chosen authentication standard is sufficiently objective across individual and legal-entity Patent Licensors.
+Review whether cure should exist, whether dismissal must be with prejudice, whether material relief already obtained changes the result, whether thirty days is appropriate, whether proxy-claimant dismissal should suffice in every covered transfer/funding scenario, and whether the chosen authentication standard is sufficiently objective across individual and legal-entity Patent Licensors.
 
 ### R8 — Transfer / successor enforceability
 
@@ -323,11 +323,11 @@ The first PR review should test at least:
 15. defensive counterclaim after Patent Licensor sues first — must not trigger fixed retaliation;
 16. Patent Licensee directs or knowingly causes an assertion entity to sue over the exact Covered Implementation — proxy path must trigger even if the proxy is not formally acting on the Licensee's behalf;
 17. unrelated Affiliate independently sues without Licensee direction/control/knowing causation — must not trigger solely by affiliation;
-18. covered proceeding was initiated, maintained, directed, controlled, knowingly caused, or purpose-built-transfer enabled before first acquisition and remains pending — person must not acquire the grant even if the qualifying nexus later ceased;
+18. covered proceeding was initiated, maintained, directed, controlled, knowingly caused, purpose-built-transfer enabled, or purpose-built-funded before first acquisition and remains pending — person must not acquire the grant even if the qualifying nexus later ceased;
 19. Patent Licensee triggers termination, permission terminates, and the same covered proceeding remains pending — public-direct eligibility must not immediately recreate the permission;
 20. a person purpose-transfers rights before acquisition to **maintain** an already-filed covered assertion — the historical gate must treat that maintenance path consistently with §9.2;
 21. covered proceeding ceases to remain pending — acquisition or reacquisition may occur only prospectively if all other conditions are met;
-22. cure available + withdrawal within thirty days of authenticated notice — termination never becomes effective and no reacquisition analysis is needed;
+22. cure available + triggering assertion withdrawn/dismissed within thirty days of authenticated notice — termination never becomes effective and no reacquisition analysis is needed;
 23. delayed Patent Licensor notice — cure clock and termination are delayed rather than creating retroactive infringement exposure;
 24. offensive assertion against a modified product outside the exact Covered Implementation — must not trigger merely by similarity;
 25. existing Apache-2.0 patent permission remains independently usable after ECL-PL termination;
@@ -341,8 +341,10 @@ The first PR review should test at least:
 33. ECL policy attempts `suspend-existing-rights` without an objectively resolvable restoration condition — must be ineligible for operativeness;
 34. recipient does not sign a bilateral contract but relies on the public patent permission — identify which conditions remain enforceable and on what legal theory;
 35. Patent Licensee purpose-transfers patent/assertion-control rights principally to enable a proxy to bring or maintain the covered assertion, the proxy does so, and the Licensee retains no continuing control — the post-grant purpose-built-transfer path must still trigger;
-36. Patent Licensee provides ordinary non-controlling litigation funding and knows the funds facilitate or are necessary to the covered case, but does not direct/control it and has no arrangement/act principally intended to procure the assertion — funding alone must not trigger;
-37. funding is coupled with material direction/control, or the funding arrangement/related act is principally intended to procure the specific covered assertion — the funding path may satisfy the same narrow trigger and historical gate.
+36. Patent Licensee provides ordinary non-controlling litigation funding and knows the funds facilitate or are necessary to the covered case, but does not direct/control it and the arrangement is not principally intended to procure that specific assertion — funding alone must not trigger;
+37. funding is coupled with material direction/control — the funding activity may satisfy the existing direction/control trigger;
+38. Patent Licensee funds under an arrangement whose principal purpose is procuring the bringing or maintenance of the specific covered assertion, but retains no control and transfers no patent rights — the purpose-built-funding path itself must unambiguously trigger and must also be reflected in acquisition/reacquisition;
+39. purpose-built transfer or funding triggers through a proxy claimant, the proxy fully withdraws/dismisses the triggering assertion within the authenticated cure window, and the Licensee does not continue/procure continuation elsewhere — cure must succeed even though the Licensee did not formally control the dismissal.
 
 ## 9. Qualified review remains mandatory
 
