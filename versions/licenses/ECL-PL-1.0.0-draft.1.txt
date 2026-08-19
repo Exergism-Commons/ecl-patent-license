@@ -87,6 +87,8 @@ Subject to all applicable terms of this License and the exact PatentGrantManifes
 
 The permission runs directly from the Patent Licensor to each qualifying Patent Licensee. It does not depend on a distributor, upstream licensee, customer relationship, Affiliate relationship, transfer of a copy, or Sublicense chain.
 
+Where the exact PatentGrantBundle selects defensive_termination.profile: narrow-covered-implementation, a person maintaining at the instant it would otherwise first become a Patent Licensee a proceeding that would satisfy Section 9.2 if initiated at that instant does not acquire the ECL-PL permission while that covered offensive proceeding remains pending. If the proceeding is fully withdrawn, dismissed, or otherwise ceases to satisfy Section 9.2, the person may qualify prospectively from that later time if every other grant condition is satisfied. This rule does not create retroactive permission for earlier acts.
+
 3.2 Territorial meaning.
 
 The grant applies in each jurisdiction in which a Covered Patent Claim has legal effect and in which the Patent Licensor has authority to grant the relevant permission. "Worldwide" language, where used for convenience, does not create patent rights in a territory where no relevant right exists and does not displace territorial patent law.
@@ -103,11 +105,11 @@ You may pass along the Covered Implementation and information about this PatentG
 
 4.1 General rule.
 
-The PatentGrantManifest must select one claim_scope.model. The selected model is applied only against the exact Covered Implementation and the Patent Licensor's actual licensable authority. The Covered Patent Claim set is determined from the immutable bundle rule and relevant patent law, not from a particular recipient's separate licences, covenants or other Independent Patent Permissions.
+The PatentGrantManifest must select one claim_scope.model. The selected model is applied only against the exact Covered Implementation and the Patent Licensor's actual licensable authority. The Covered Patent Claim set is determined from the immutable bundle rule and the claim's substantive scope under relevant patent law, not from a particular recipient's licences, covenants, statutory exceptions, exhaustion, compulsory licences, government-use rights or other Independent Patent Permissions or defenses.
 
 4.2 necessarily-infringed.
 
-If claim_scope.model is necessarily-infringed, a claim is covered only if practicing the Covered Implementation within the exact boundaries stated by the PatentGrantManifest would necessarily fall within the exclusionary scope of that claim in the relevant jurisdiction, assuming no licence or covenant from the Patent Licensor and subject to statutory exceptions or limitations that mean the Patent Licensor's authorization is not legally required. A claim is not brought into or removed from scope merely because a particular recipient separately holds or later loses an Independent Patent Permission.
+If claim_scope.model is necessarily-infringed, a claim is covered only if practicing the Covered Implementation within the exact boundaries stated by the PatentGrantManifest would necessarily satisfy the limitations of and fall within the substantive exclusionary scope of that claim in the relevant jurisdiction, evaluated without regard to any particular recipient's licence, covenant, statutory exception or limitation, exhaustion position, compulsory licence, government-use authorization, other Independent Patent Permission, defense, immunity or remedial limitation. Those independent rules are applied later when determining whether a particular Covered Act actually requires the Patent Licensor's authorization; they do not add or remove Covered Patent Claims.
 
 A claim is not brought into scope merely because some optional modification, additional component, alternative implementation or external combination could infringe it.
 
@@ -151,6 +153,8 @@ Nothing in this License restricts an act that applicable law permits without the
 
 Nothing in this License recreates patent control over an article, product or transaction to the extent applicable law has exhausted the relevant patent right. Termination, suspension, restriction or expiration of a permission under this License does not reverse an exhaustion event that applicable law treats as legally complete.
 
+An ECL-derived initial-grant policy may limit whether ECL-PL itself authorizes a sale or other disposition before exhaustion occurs, as provided by Sections 6.4 and 8.9. It cannot reverse exhaustion that applicable law has already produced, and it cannot negate exhaustion arising from a transaction independently authorized under another legal basis that this Patent Licensor cannot withdraw through this License.
+
 5.4 No admission.
 
 Exercising or relying on this License is not, by itself, an admission that a Covered Patent Claim is valid, enforceable, infringed, essential, or necessary to practice the Covered Implementation.
@@ -174,13 +178,15 @@ A person does not obtain or lose the public direct grant merely because that per
 
 You receive no authority under Version 1.0.0-draft.1 to grant an ECL-PL Sublicense. A downstream recipient who qualifies receives its permission directly from the Patent Licensor; a downstream recipient who does not qualify cannot be made eligible by an intermediary's purported Sublicense.
 
-6.4 No contractor, manufacturer or principal bypass.
+6.4 No contractor, manufacturer, disposition or principal bypass.
 
-Version 1.0.0-draft.1 creates no separate have-made authorization that permits You to cause an otherwise ineligible third party to perform Covered Acts. A contractor or manufacturer may perform Covered Acts under ECL-PL only if that party independently qualifies for the public direct grant **for those acts and that project**, or if another Independent Patent Permission authorizes the acts.
+Version 1.0.0-draft.1 creates no separate have-made authorization that permits You to cause an otherwise ineligible third party to perform Covered Acts. A contractor or manufacturer may perform Covered Acts under ECL-PL only if that party independently qualifies for the public direct grant for those acts and that project, or if another Independent Patent Permission authorizes the acts.
 
-Where an exact PatentGrantBundle uses an ECL-derived initial-grant policy, contractor/manufacturer eligibility is evaluated under the same exact frozen ECL rule, including any applicable Covered Associate, Restricted Project, direction, material-benefit or anti-circumvention semantics that the incorporated ECL Bundle makes part of that classification. An otherwise eligible intermediary does not receive an ECL-PL grant for acts that the exact incorporated rule objectively classifies as restricted because they are knowingly performed at the direction of, on behalf of, or primarily for the material benefit of an ineligible Restricted Party, or as part of an exact Restricted Project.
+Where an exact PatentGrantBundle uses an ECL-derived initial-grant policy, contractor/manufacturer eligibility and ECL-PL-authorized sales or other dispositions are evaluated under the same exact frozen ECL rule, including any applicable Covered Associate, Restricted Project, direction, material-benefit or anti-circumvention semantics that the incorporated ECL Bundle makes part of that classification. An otherwise eligible intermediary does not receive ECL-PL permission for acts that the exact incorporated rule objectively classifies as restricted because they are knowingly performed at the direction of, on behalf of, or primarily for the material benefit of an ineligible Restricted Party, as part of an exact Restricted Project, or because the exact patent-specific policy expressly withholds the relevant disposition to the triggered recipient or project.
 
-A restricted-party-policy that withholds or conditions an initial patent grant is not eligible for operativeness under this PatentLicenseRelease if the exact incorporated ECL rule and patent trigger leave it objectively indeterminate whether outsourced Covered Acts performed for a triggered Restricted Party are included or excluded. This fail-closed rule is intended to prevent outsourced manufacturing, sale or import from becoming an unstated route around the exact initial-grant restriction while avoiding a general guilt-by-association rule.
+Where a restricted-party-policy or restricted-project-policy is intended to withhold patent permission from an ineligible recipient or project, the exact incorporated ECL rule and patent_specific_effect must objectively resolve both (a) outsourced/service Covered Acts performed for that recipient or project and (b) sales, transfers, supplies or other ECL-PL-authorized dispositions of covered articles that could, under applicable law, create exhaustion or another downstream freedom in favor of that recipient or project. If either path is left objectively indeterminate, that ECL-derived initial-grant policy is not eligible for operativeness under this PatentLicenseRelease.
+
+This fail-closed rule prevents ECL-PL itself from supplying an unstated manufacturing or authorized-sale route around the exact initial-grant restriction while avoiding a general guilt-by-association rule. It does not purport to prevent exhaustion or other rights arising from a transaction independently authorized by another licence, another rightsholder, statute, compulsory licence, government-use rule or other Independent Patent Permission.
 
 6.5 Future downstream models.
 
@@ -232,7 +238,7 @@ Where the incorporated ECL Schedule distinguishes an unrestricted designation fr
 
 An `Under Review`, `U`, `N`, omitted, unresolved, dossier-only, registry-only or score-only state has no Restricted Party patent effect under this Section unless the exact incorporated ECL License and Schedule expressly give that exact state operative Restricted Party effect. Omission from a Schedule is not affirmative proof of unrestricted status and does not authorize a publisher to invent a classification.
 
-For an initial-grant restriction, the exact incorporated ECL rule must also resolve whether a nominally separate contractor, manufacturer, agent or other intermediary acting for a triggered Restricted Party falls within the relevant Covered Associate, Restricted Project, direction/material-benefit or anti-circumvention boundary. If that relationship cannot be determined under the exact frozen ECL rule and exact patent trigger, the Restricted Party patent restriction is not eligible for operativeness under this PatentLicenseRelease rather than being interpreted to permit an outsourcing bypass.
+For an initial-grant restriction, the exact incorporated ECL rule must also resolve whether a nominally separate contractor, manufacturer, agent, seller, distributor or other intermediary acting for, supplying, or disposing covered articles to a triggered Restricted Party falls within the relevant Covered Associate, Restricted Project, direction/material-benefit, anti-circumvention or recipient/disposition boundary. If the policy is intended to withhold patent permission from that Restricted Party but cannot determine whether the intermediary's ECL-PL-authorized acts or disposition are covered, including where the disposition could create exhaustion, the Restricted Party patent restriction is not eligible for operativeness under this PatentLicenseRelease rather than being interpreted to permit an outsourcing or authorized-sale bypass.
 
 8.6 Restricted Project translation.
 
@@ -241,6 +247,8 @@ If ecl_bundle_reference.purpose is restricted-project-policy, a patent restricti
 If the exact ECL rule treats a project as Restricted because of direct Schedule designation, Material Participation, a Covered Associate relationship, acting at the direction of or primarily for the material benefit of a Restricted Party, or deliberate circumvention, ECL-PL may use that result only to the extent the exact patent_specific_effect expressly selects that patent consequence. The ECL rule remains the source of the project classification; ECL-PL does not create a broader graph-reachability, guilt-by-association or unlimited affiliate rule.
 
 Where project status depends on facts rather than a direct Schedule entry, the relevant conduct, relationship, knowledge standard and time must be determined under the exact frozen ECL rule and the exact manifest-defined patent trigger. A mutable registry or later governance output cannot be used as a substitute for that determination.
+
+For an initial-grant restriction intended to withhold patent permission from a Restricted Project, the exact rule must also determine whether ECL-PL-authorized sales, transfers, supplies or other dispositions into that project are within the restriction when those dispositions could produce exhaustion or comparable downstream freedom. If that question is objectively indeterminate, the ECL-derived patent restriction is not eligible for operativeness under this PatentLicenseRelease.
 
 8.7 ECL exclusions and remediation travel with the incorporated classification.
 
@@ -256,7 +264,9 @@ A suspension or limitation whose commencement, scope or end condition cannot be 
 
 8.9 Public direct grant and initial eligibility.
 
-Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the exact incorporated trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1 for the affected rights. An intermediary cannot cure that ineligibility by transferring the Covered Implementation, changing a commercial label, routing activity through an Affiliate or contractor, or purporting to sublicense ECL-PL rights.
+Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the exact incorporated trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1 for the affected rights. An intermediary cannot cure that ineligibility by transferring the Covered Implementation, changing a commercial label, routing activity through an Affiliate or contractor, purporting to sublicense ECL-PL rights, or relying on an ECL-PL-authorized sale or disposition that the exact frozen rule and patent_specific_effect classify as outside the permitted recipient/project scope.
+
+A PatentGrantBundle that intends such initial ineligibility to prevent ECL-PL from authorizing exhaustion-producing dispositions to the triggered recipient or project must make that disposition rule objectively resolvable under the exact incorporated ECL policy item and patent_specific_effect. If it does not, the candidate fails closed under Sections 6.4, 8.5 or 8.6 rather than treating the silence as authorization.
 
 Conversely, a person is not excluded from the public direct grant merely because an upstream Exergism assessment is unfavorable or because a dossier, registry record or governance proposal concerns that person. The exact incorporated ECL classification and exact patent_specific_effect control.
 
@@ -278,9 +288,11 @@ If defensive_termination is absent or its profile is none, this License creates 
 
 9.2 Narrow Covered Implementation profile.
 
-If defensive_termination.profile is narrow-covered-implementation, the trigger occurs only if You directly or indirectly initiate, direct, control, or knowingly cause a judicial or administrative patent-infringement proceeding in which You, or a person/entity acting at Your direction or on Your behalf, affirmatively alleges that the exact Covered Implementation, as such and within its manifest-defined boundary, infringes a patent claim that You own, control, are authorized to assert, or transferred for the principal purpose of enabling that assertion.
+If defensive_termination.profile is narrow-covered-implementation, the trigger occurs only if, after becoming a Patent Licensee, You directly or indirectly initiate, maintain, direct, control, or knowingly cause a judicial or administrative patent-infringement proceeding in which You, or a person/entity whose covered assertion You direct, control, knowingly cause, or enable through a transfer or assignment made with the principal purpose of bringing that assertion, affirmatively alleges that the exact Covered Implementation, as such and within its manifest-defined boundary, infringes a patent claim that You own, control, are authorized to assert, or transferred for the principal purpose of enabling that assertion.
 
-A proxy assertion is included only where You exercise material direction or control over the assertion, knowingly cause the proxy to bring it, or transfer/assertion-control rights to the proxy with the principal purpose of bringing the covered assertion. Mere passive investment, an arm's-length transfer without that principal purpose, ordinary legal funding without control of the assertion, or an unrelated assertion by an Affiliate does not by itself trigger termination.
+A proceeding already pending when You would otherwise first qualify is governed by Section 3.1: while You maintain a proceeding that would satisfy the preceding paragraph if You were already a Patent Licensee, You do not acquire the ECL-PL permission. After the proceeding ceases to satisfy the trigger, You may qualify only prospectively if every other condition is met.
+
+A proxy assertion is included only where You exercise material direction or control over the assertion, knowingly cause the proxy to bring or maintain it, or transfer/assertion-control rights to the proxy with the principal purpose of bringing or maintaining the covered assertion. Mere passive investment, an arm's-length transfer without that principal purpose, ordinary legal funding without direction/control or knowing causation of the covered assertion, or an unrelated assertion by an Affiliate does not by itself trigger termination.
 
 For this profile, merely giving technical notice, requesting licensing discussions, defending an action, asserting a compulsory counterclaim or cross-claim, responding to a proceeding initiated by another party, seeking a declaration of non-infringement in response to a concrete threat, challenging validity or enforceability, participating in an administrative validity proceeding, or enforcing this License does not by itself trigger termination. The same exclusions apply when the defensive act is undertaken through counsel, an Affiliate or another representative on the Patent Licensee's behalf.
 
@@ -298,7 +310,7 @@ Subject to Section 9.5 where cure is available, a narrow-covered-implementation 
 
 9.5 Cure and withdrawal.
 
-If defensive_termination.cure_or_withdrawal is available, a narrow-profile trigger does **not** immediately terminate the ECL-PL permission. The Patent Licensor may deliver authenticated written notice identifying the exact PatentGrantBundle identity, the exact proceeding, the conduct alleged to satisfy Section 9.2, and the Patent Licensor or authorized representative giving notice. The thirty-day cure period begins only when that notice is received.
+If defensive_termination.cure_or_withdrawal is available, a narrow-profile trigger does not immediately terminate the ECL-PL permission. The Patent Licensor may deliver authenticated written notice identifying the exact PatentGrantBundle identity, the exact proceeding, the conduct alleged to satisfy Section 9.2, and the Patent Licensor or authorized representative giving notice. The thirty-day cure period begins only when that notice is received.
 
 Notice is authenticated for purposes of this Section only if the Patent Licensee can verify that it originates from the Patent Licensor or an authorized representative through an authentication method at least as strong as, or cryptographically traceable to, the identity/authority mechanism used for the Patent Licensor's attributable approval of the exact PatentGrantBundle. An unverifiable notice does not start the cure period.
 
