@@ -1,8 +1,10 @@
 # ECL-PL Physical Container Profile
 
-> **Status: mandatory architecture-stage serialization profile for individual PatentGrantBundles. No licensing effect.**
+> **Status: mandatory architecture-stage serialization profile for every operative PatentGrantBundle. No licensing effect.**
 
-This document is the complete and exclusive definition of `urn:ecl-pl:container-profile:metadata-free-v1`, the container profile referenced by `spec/SECURITY-PROFILE.md` section 1.4. For that profile, this document narrows the generic archive/container wording in `SECURITY-PROFILE.md` and `VERSIONING.md`. A validator that gives this profile identifier any other outer-container meaning is non-conforming.
+This document is the complete and exclusive definition of `urn:ecl-pl:container-profile:metadata-free-v1`, the physical container profile for **every operative PatentGrantBundle, regardless of `subject_type`**. It narrows and, where necessary, explicitly supersedes generic archive/container wording in `spec/SECURITY-PROFILE.md` and `spec/VERSIONING.md`. A validator that gives this profile identifier any other outer-container meaning, or accepts a different physical packaging profile for an operative bundle, is non-conforming.
+
+In particular, the generic “archive format” language in `spec/SECURITY-PROFILE.md` section 3 and any packaging-neutral wording in `spec/VERSIONING.md` do **not** authorize ZIP, TAR, filesystem trees or another implementation-selected outer format for non-individual bundles. Section 1.4 of `SECURITY-PROFILE.md` adds individual-specific privacy-review obligations; it does not limit this physical-container requirement to individuals.
 
 The profile binds exactly one decoder/grammar:
 
@@ -11,7 +13,7 @@ The profile binds exactly one decoder/grammar:
 - media type: `application/ecl-pl-bundle-v1`
 - serialization name: `ECLPLB1`
 
-ZIP, TAR, cpio, filesystem trees, MIME multipart, self-extracting archives, compressed archive wrappers, content sniffing and implementation-selected archive libraries are **not** alternate encodings of this profile.
+ZIP, TAR, cpio, filesystem trees, MIME multipart, self-extracting archives, compressed archive wrappers, content sniffing and implementation-selected archive libraries are **not** alternate encodings of this profile for any operative bundle.
 
 ## 1. Exact byte grammar
 
@@ -65,8 +67,8 @@ For every record:
 1. `path_length` MUST be in `1..MAX_PATH_LENGTH_BYTES`.
 2. `path_bytes` MUST be strict UTF-8 with no BOM, replacement decoding, NUL, control characters or invalid sequence.
 3. Decoding and then strict UTF-8 re-encoding MUST reproduce `path_bytes` byte-for-byte. No Unicode normalization, case folding, slash conversion or filesystem normalization is permitted.
-4. The decoded path MUST satisfy the canonical PatentGrantBundle member-path rules in `spec/VERSIONING.md` and `spec/SECURITY-PROFILE.md`.
-5. Record 0 MUST have path exactly `BUNDLE-INDEX`.
+4. **Record 0 is a special physical path outside the indexed-member grammar.** Its decoded path MUST be exactly `BUNDLE-INDEX`. The canonical indexed-member path grammar in `spec/VERSIONING.md` section 4 rule 6 and the evidence-path grammars in `spec/SECURITY-PROFILE.md` do not apply to record 0, because `BUNDLE-INDEX` is deliberately excluded from its own index.
+5. For records 1 through `N-1`, the decoded path MUST satisfy the canonical indexed PatentGrantBundle member-path rules in `spec/VERSIONING.md` and `spec/SECURITY-PROFILE.md`.
 6. Records 1 through `N-1` MUST be in strictly increasing unsigned lexicographic order of their exact `path_bytes`.
 7. Duplicate paths, byte-distinct aliases that the canonical path rules reject, or a second `BUNDLE-INDEX` fail validation.
 
@@ -79,6 +81,16 @@ Member identity is the exact validated path byte sequence. Extraction to a files
 3. The exact payload bytes are the bytes supplied to SHA-256 and to the member-specific decoder/privacy gate.
 4. The outer decoder MUST NOT inspect a payload to infer an alternate outer-container boundary.
 5. Nested/container-like bytes inside a member have no outer-container meaning. Whether such a member format is permitted is decided only by the member rules in `SECURITY-PROFILE.md`.
+
+### 4.1 Raw JSON numeric-lexeme privacy rule for individuals
+
+For an individual bundle, this profile explicitly narrows the JSON-evidence traversal in `spec/SECURITY-PROFILE.md` sections 1.1, 1.2 and 1.4 so that **JSON number tokens are privacy-inspected in addition to member names and string/URI values**.
+
+Before any JSON parser may coerce a number to IEEE-754, arbitrary precision, a language-native integer, scientific notation or another numeric representation, the same lossless raw-token pass used for duplicate-name and surrogate checks MUST expose every exact JSON numeric lexeme. Each lexeme is inspected byte-for-byte as ASCII text under the credential-exclusion rule.
+
+A numeric lexeme is accepted only when its complete spelling is unambiguously a schema-structured public numeric value permitted at that exact JSON path, such as a bounded claim number or another profile-defined non-personal public quantity. A free-form or evidence JSON numeric token that could be a plaintext government identifier, low-entropy credential, deterministic credential derivative, or unexplained identifier-like digit run fails closed. Values such as an unclassified `123456789`, including equivalent exponent/decimal spellings, MUST NOT become acceptable merely because a parser converts them to a number.
+
+Privacy classification uses the **original raw numeric lexeme and JSON path**, not a rounded, normalized or reserialized numeric value. If the tokenizer cannot preserve the exact numeric token before semantic parsing, the individual bundle is non-conforming.
 
 ## 5. Binding to BUNDLE-INDEX
 
@@ -96,7 +108,7 @@ A mismatch in count, path set or any required digest fails closed before legal-o
 
 ## 6. Single-decoder and anti-polyglot rule
 
-For an individual PatentGrantBundle, `ECLPLB1` is a protocol object, not a generic archive. Conformance is determined only by `urn:ecl-pl:container-decoder:eclplb1-v1`.
+For **every operative PatentGrantBundle**, `ECLPLB1` is a protocol object, not a generic archive. Conformance is determined only by `urn:ecl-pl:container-decoder:eclplb1-v1`.
 
 A validator MUST:
 
@@ -109,9 +121,11 @@ A validator MUST:
 
 Thus two conforming validators given the same outer byte sequence and able to complete validation either derive the same ordered `(path_bytes, content_bytes)` records or both reject it for the same profile rule. A local resource-exhaustion result defined in section 2 is not an alternate validity judgment. Library-specific archive behavior has no authority to expand acceptance.
 
+The generic archive/member-type language in `spec/SECURITY-PROFILE.md` section 3 is therefore interpreted only as fail-closed logical-member requirements inside this exact serialization. `ECLPLB1` itself has no archive entry-type metadata, directory entries, links, special filesystem nodes or alternate outer member semantics: each parsed record is exactly one finite data stream by grammar.
+
 ## 7. Privacy-review binding
 
-For `urn:ecl-pl:container-profile:metadata-free-v1`, the privacy-review record required by `SECURITY-PROFILE.md` MUST identify both:
+For an individual bundle using `urn:ecl-pl:container-profile:metadata-free-v1`, the privacy-review record required by `SECURITY-PROFILE.md` MUST identify both:
 
 ```text
 container_profile_id = urn:ecl-pl:container-profile:metadata-free-v1
@@ -122,9 +136,11 @@ outer_container_sha256 = <sha256 of the exact complete ECLPLB1 byte sequence>
 
 The record MUST additionally bind the exact ordered record inventory `(path, content_length, sha256)` produced by the decoder, including the separately computed SHA-256 of record 0 (`BUNDLE-INDEX`). Re-encoding the same logical members creates different outer bytes unless the serialization is byte-for-byte identical and therefore requires a different `outer_container_sha256` and a new physical-package privacy review.
 
+Non-individual bundles are subject to the same exact physical serialization and anti-polyglot rules even when this individual privacy-review record is not applicable.
+
 ## 8. Fail-closed precedence
 
-Any ambiguity about magic, integer decoding, normative size limits, record boundary, UTF-8 path bytes, canonical path identity, ordering, count, payload extent, EOF, member-set equality, digest binding or decoder selection is a validation failure.
+Any ambiguity about magic, integer decoding, normative size limits, record boundary, UTF-8 path bytes, record-0 special path, canonical indexed path identity, ordering, count, payload extent, EOF, member-set equality, digest binding or decoder selection is a validation failure.
 
 Local resource exhaustion for an otherwise within-limit input is not such an ambiguity: it is an incomplete validation and MUST NOT be converted into either acceptance or profile-invalid status.
 
