@@ -71,9 +71,9 @@ Subject to this License and the PatentGrantManifest, permission under a Covered 
 
 No grant extends beyond the Patent Licensor's actual authority. The PatentGrantManifest's authority representation and retained evidence are part of the release and review record, but neither creates ownership or authority by declaration alone.
 
-2.4 No implied later authority.
+2.4 No implied later authority or post-operative claim expansion.
 
-If the Patent Licensor later acquires ownership, control or licensing authority over a claim, that later event does not retroactively validate a grant for periods in which the Patent Licensor lacked authority. Treatment of later-acquired claims is governed by Section 4.5.
+If the Patent Licensor later acquires ownership, control or licensing authority over a claim, that later event does not retroactively validate a grant for periods in which the Patent Licensor lacked authority. Treatment of later-acquired claims and claims first issued, newly added or materially amended after the PatentGrantBundle becomes operative is governed by Section 4.5.
 
 2.5 Unsupported expiration_policy field.
 
@@ -123,11 +123,15 @@ If claim_scope.model is enumerated-only, only the exact claims enumerated by the
 
 If claim_scope.model is hybrid, each part of the hybrid rule must be given effect according to the complete definition encoded by the PatentGrantManifest without using one part to enlarge another beyond its stated boundary. If claim_scope.model is other, the bundle may become operative under this PatentLicenseRelease only if the manifest supplies a complete, objectively executable scope definition and the legal-review record expressly approves that model for the exact candidate. An undefined portfolio-wide formulation is not a supported scope model.
 
-4.5 Later-acquired claims.
+4.5 Later-acquired and post-operative claims.
 
-If claim_scope.later_acquired_claims is excluded-unless-added, a claim over which the Patent Licensor later acquires authority is not covered unless a new operative PatentGrantBundle adds it or otherwise brings it into scope.
+For Version 1.0.0-draft.1, claim_scope.later_acquired_claims is also the closed gate for a claim whose operative claim identity or substantive claim text first arises or materially changes after the PatentGrantBundle becomes operative. This includes a claim that later issues from an application or continuation already owned or controlled by the Patent Licensor, a claim newly added after operativeness, and a claim materially amended, reissued or otherwise replaced after operativeness. Ownership or licensing authority over the underlying application, family or pre-amendment claim at the operative time does not by itself grandfather the later-issued, newly added or materially changed claim into the grant.
 
-If claim_scope.later_acquired_claims is included-if-rule-satisfied, a later-acquired claim becomes eligible for coverage only from the time the Patent Licensor obtains authority to grant it, only if it independently satisfies the same claim-scope rule against the same immutable Covered Implementation, and only to the extent inclusion is lawful and consistent with prior commitments. Inclusion is prospective and does not create liability or permission under this License for an earlier period in which the Patent Licensor lacked authority.
+If claim_scope.later_acquired_claims is excluded-unless-added, neither (a) a claim over which the Patent Licensor later acquires authority nor (b) a later-issued, newly added or materially changed claim described above is covered unless a new operative PatentGrantBundle expressly adds that claim or otherwise brings that post-operative claim identity into scope. A necessarily-infringed or hybrid rule therefore cannot silently expand merely because a post-operative claim later comes to satisfy its substantive test.
+
+If claim_scope.later_acquired_claims is included-if-rule-satisfied, a later-acquired or post-operative claim becomes eligible for coverage only prospectively from the later of (a) the time the Patent Licensor has authority to grant it and (b) the time the relevant claim is issued, added or takes effect in its materially changed form, only if it independently satisfies the same claim-scope rule against the same immutable Covered Implementation, and only to the extent inclusion is lawful and consistent with prior commitments. Inclusion does not create liability or permission under this License for an earlier period in which the Patent Licensor lacked authority or the later claim identity or claim text did not yet exist in the relevant form.
+
+Section 4.3 remains independently controlling for an enumerated-only model: only the exact enumerated claims are eligible regardless of this Section.
 
 A PatentGrantBundle containing not-decided for later_acquired_claims cannot become operative under this PatentLicenseRelease.
 
@@ -264,11 +268,15 @@ Where a normative ECL reference is present, only the exact consequence selected 
 
 A suspension or limitation whose commencement, scope or end condition cannot be determined objectively from the exact immutable policy item and patent_specific_effect is not eligible for operativeness under this PatentLicenseRelease.
 
-8.9 Public direct grant and initial eligibility.
+An existing-right consequence that has operated against a Patent Licensee cannot be nullified by treating Section 3.1 as a fresh unrestricted offer of the same affected_rights. For the exact PatentGrantBundle and exact affected_rights: terminate-existing-rights permanently bars that Patent Licensee from reacquiring the terminated affected_rights under that same bundle; suspend-existing-rights bars acquisition or reacquisition of the suspended affected_rights for the objectively determinable duration of the suspension; and limit-existing-rights causes any permission retained or later acquired or reacquired by that Patent Licensee to remain subject to the same objectively determinable limitation for the duration of that limitation. Expiration of a suspension or limitation permits broader permission only prospectively and only if every other grant condition is then satisfied. A future distinct operative PatentGrantBundle may create a new permission on its own terms; this paragraph does not mutate the terminated, suspended or limited bundle.
+
+8.9 Public direct grant, initial eligibility and reacquisition.
 
 Where patent_specific_effect withholds or conditions the initial grant, a person who satisfies the exact incorporated trigger for withholding, or fails the stated condition, does not become a Patent Licensee under Section 3.1 for the affected rights. An intermediary cannot cure that ineligibility by transferring the Covered Implementation, changing a commercial label, routing activity through an Affiliate or contractor, purporting to sublicense ECL-PL rights, or relying on an ECL-PL-authorized sale or disposition that the exact frozen rule and patent_specific_effect classify as outside the permitted recipient/project scope.
 
 A PatentGrantBundle that intends such initial ineligibility to prevent ECL-PL from authorizing exhaustion-producing dispositions to the triggered recipient or project must make that disposition rule objectively resolvable under the exact incorporated ECL policy item and patent_specific_effect. If it does not, the candidate fails closed under Sections 6.4, 8.5 or 8.6 rather than treating the silence as authorization.
+
+Where terminate-existing-rights, suspend-existing-rights or limit-existing-rights has already operated against a Patent Licensee, reacquisition is governed by Section 8.8 rather than solely by the continuing satisfaction of Section 3.1's initial-grant conditions. The public-direct model therefore cannot immediately recreate rights that the same exact ECL-derived consequence has just terminated, suspended or limited.
 
 Conversely, a person is not excluded from the public direct grant merely because an upstream Exergism assessment is unfavorable or because a dossier, registry record or governance proposal concerns that person. The exact incorporated ECL classification and exact patent_specific_effect control.
 
@@ -352,9 +360,9 @@ To the extent enforceable as a contractual obligation, the Patent Licensor must 
 
 A change of control of a Patent Licensee does not automatically enlarge the Covered Implementation or Covered Patent Claim set. Because this release uses a public direct grant, each related entity must independently satisfy the applicable grant conditions; Affiliate status alone is not a source of permission.
 
-10.4 Acquired portfolios.
+10.4 Acquired portfolios and post-operative claims.
 
-A patent portfolio acquired by the Patent Licensor after the effective time enters the grant only as permitted by Section 4.5. No acquisition causes retroactive expansion.
+A patent portfolio acquired by the Patent Licensor after the effective time, and a claim first issued, newly added or materially amended after the PatentGrantBundle becomes operative, enters the grant only as permitted by Section 4.5. No acquisition, issuance, addition or amendment causes retroactive expansion.
 
 11. NO IMPLIED RIGHTS
 
