@@ -49,7 +49,7 @@ Nothing in this Section creates collective patent ownership, a patent pool, an o
 
 1.7 "PatentGrantManifest" means the exact immutable manifest contained in the PatentGrantBundle.
 
-1.8 "Patent Licensee" or "You" means any person or legal entity that satisfies every applicable initial-grant eligibility or condition in the exact operative PatentGrantBundle and exercises or proposes to exercise a Covered Act in reliance on the direct patent permission granted by the Patent Licensor. Status as a distributor, customer, Affiliate, contractor, manufacturer, integrator, reseller or other intermediary neither creates nor removes Patent Licensee status by itself.
+1.8 "Patent Licensee" or "You" means any person or legal entity that has acquired and currently holds the direct patent permission granted under Section 3.1 by the Patent Licensor under the exact operative PatentGrantBundle. Patent Licensee status begins when that permission is acquired, whether or not the person or entity has yet exercised or proposed to exercise a Covered Act in reliance on it, and ends for rights that terminate or are no longer held under this License. Status as a distributor, customer, Affiliate, contractor, manufacturer, integrator, reseller or other intermediary neither creates nor removes Patent Licensee status by itself.
 
 1.9 "Patent Licensor" means the person or legal entity identified as patent_licensor in the PatentGrantManifest and only to the extent that person or entity owns, controls or is otherwise authorized to grant the relevant Covered Patent Claim.
 
@@ -237,7 +237,6 @@ A normative ECL reference applies only to the exact referenced ECL Bundle and ex
 The rule incorporated by the PatentGrantBundle is frozen even where the rule evaluates conduct or relationships that occur after the PatentGrantBundle becomes operative. Later facts may be evaluated only under that frozen rule and only where the exact patent_specific_effect makes that temporal operation objectively knowable; later ECL governance cannot silently replace the rule.
 
 8.5 Restricted Party translation.
-
 If ecl_bundle_reference.purpose is restricted-party-policy, a patent restriction may arise only from Restricted Party status as that status is defined and resolved by the exact incorporated ECL Bundle and exact policy item.
 
 Where the incorporated ECL Schedule distinguishes an unrestricted designation from a scoped or capacity-limited designation, ECL-PL MUST preserve that boundary. In particular, an ECL `R` designation may affect the exact person, entity, apparatus or class within the scope actually stated by that Schedule entry; an ECL `S` designation may affect patent eligibility or rights only while the actor is acting in the exact restricted capacity, project, function or scope identified by the incorporated Schedule and ECL terms. ECL-PL MUST NOT broaden an `S` designation into a person-wide or entity-wide patent exclusion.
@@ -357,7 +356,6 @@ Assignment, acquisition, exclusive licensing or other transfer of a patent after
 To the extent enforceable as a contractual obligation, the Patent Licensor must not knowingly structure a later transfer for the principal purpose of defeating patent permissions already granted under an operative PatentGrantBundle. This clause does not represent that every successor is automatically bound in every jurisdiction.
 
 10.3 Licensee acquisitions and Affiliates.
-
 A change of control of a Patent Licensee does not automatically enlarge the Covered Implementation or Covered Patent Claim set. Because this release uses a public direct grant, each related entity must independently satisfy the applicable grant conditions; Affiliate status alone is not a source of permission.
 
 10.4 Acquired portfolios and post-operative claims.
