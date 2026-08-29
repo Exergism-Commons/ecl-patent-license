@@ -65,7 +65,7 @@ For this PatentLicenseRelease, the calendar value in PatentGrantManifest.effecti
 
 2.2 Claim duration.
 
-Subject to this License and the PatentGrantManifest, permission under a Covered Patent Claim is intended to continue for so long as authorization from the Patent Licensor would otherwise be required under that claim, unless the permission terminates earlier under an applicable termination provision. Expiration, lapse, invalidity, revocation or another legal event may make a patent permission unnecessary; this License does not convert an unavailable or unenforceable claim into an enforceable one.
+Subject to this License and the PatentGrantManifest, permission under a Covered Patent Claim is intended to continue for the remaining legal life of that claim, to the extent the granted permission remains legally effective, unless the permission terminates earlier under an applicable termination provision. A later assignment, exclusive licence or other loss of ownership, control or licensing authority by the person or entity identified as patent_licensor in the PatentGrantManifest does not by itself shorten or terminate a permission already granted under that claim; whether that pre-existing permission binds or otherwise affects a successor or transferee is determined by Section 10.1 and applicable law. Expiration, lapse, invalidity, revocation or another legal event may make a patent permission unnecessary or legally ineffective; this License does not convert an unavailable or unenforceable claim into an enforceable one.
 
 2.3 Authority limitation.
 
